@@ -26,8 +26,8 @@ Fixedpoint fixedpoint_create2(uint64_t whole, uint64_t frac) {
   //this can only create non-negative values
   Fixedpoint res;
   res.whole_part = whole;
-  res.frac_part = frac
-  res.tag = 1
+  res.frac_part = frac;
+  res.tag = 1;
   //assert(0);
   return res;
 }
@@ -37,13 +37,15 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
 
   // Iterate from right until the '.' to get the frac_part
   // Iterate from '.' until index is 0 to get the whole_part
-  int i = strlen(hex) - 1;
-  while (hex[i] != '.') { //TODO: deal with empty string
 
-  }
-  while (i >= 0) {
 
-  }
+  // int i = strlen(hex) - 1;
+  // while (hex[i] != '.') { //TODO: deal with empty string
+
+  // }
+  // while (i >= 0) {
+
+  // }
   assert(0);
   return DUMMY;
 }
@@ -95,9 +97,8 @@ int fixedpoint_compare(Fixedpoint left, Fixedpoint right) {
 }
 
 int fixedpoint_is_zero(Fixedpoint val) {
-  // TODO: implement
-  assert(0);
-  return 0;
+  //Logan - "Don't know if this is right"
+  return val.whole_part == 0 && val.frac_part == 0;
 }
 
 int fixedpoint_is_err(Fixedpoint val) {
