@@ -35,6 +35,14 @@ Fixedpoint fixedpoint_create2(uint64_t whole, uint64_t frac) {
 Fixedpoint fixedpoint_create_from_hex(const char *hex) {
   // TODO: implement
 
+  //find where the '.' occurs to split into who and fractional
+  for (int i = 0; i < strlen(hex); i++) {
+    if (hex[i] == '.') {
+      break
+    }
+  }
+  const char whole[] 
+
   //here we want to use sscanf and bitsifting to make the conversion
   int store_value;
   sscanf(hex, "%x" , &store_value);
