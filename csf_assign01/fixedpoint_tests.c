@@ -255,3 +255,6 @@ void test_is_err(TestObjs *objs) {
 }
 
 // TODO: implement more test functions
+
+//Note from Logan:
+//Test ".0990", ".", "09234."

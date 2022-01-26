@@ -5,8 +5,8 @@
 
 typedef struct {
   // TODO: add fields
-  uint64_t whole;
-  uint64_t fractional;
+  uint64_t whole_part;
+  uint64_t frac_part;
   //Codes for the tag
   // 1 -> valid/non-negative
   // 2 -> valid/negative

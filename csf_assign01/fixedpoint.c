@@ -12,15 +12,10 @@ Fixedpoint fixedpoint_create(uint64_t whole) {
   // TODO: implement
 
   //this can only create non-negative values
-
   Fixedpoint res;
-  res.whole = whole;
-  res.fractional = 0
-  if (whole >= 0) {
-    res.tag = 1;
-  } else {
-    res.tag = 2;
-  }
+  res.whole_part = whole;
+  res.frac_part = 0;
+  res.tag = 1;
   //assert(0);
   return res;
 }
@@ -29,27 +24,38 @@ Fixedpoint fixedpoint_create2(uint64_t whole, uint64_t frac) {
   // TODO: implement
 
   //this can only create non-negative values
-
-  assert(0);
-  return DUMMY;
+  Fixedpoint res;
+  res.whole_part = whole;
+  res.frac_part = frac
+  res.tag = 1
+  //assert(0);
+  return res;
 }
 
 Fixedpoint fixedpoint_create_from_hex(const char *hex) {
   // TODO: implement
+
+  // Iterate from right until the '.' to get the frac_part
+  // Iterate from '.' until index is 0 to get the whole_part
+  int i = strlen(hex) - 1;
+  while (hex[i] != '.') { //TODO: deal with empty string
+
+  }
+  while (i >= 0) {
+
+  }
   assert(0);
   return DUMMY;
 }
 
 uint64_t fixedpoint_whole_part(Fixedpoint val) {
-  // TODO: implement
-  assert(0);
-  return 0UL;
+  //TODO: Do we need to do error handling here?
+  return val.whole_part;
 }
 
 uint64_t fixedpoint_frac_part(Fixedpoint val) {
-  // TODO: implement
-  assert(0);
-  return 0UL;
+  //TODO: Do we need to do error handling here?
+  return val.frac_part;
 }
 
 Fixedpoint fixedpoint_add(Fixedpoint left, Fixedpoint right) {
