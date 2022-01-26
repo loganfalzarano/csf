@@ -5,6 +5,17 @@
 
 typedef struct {
   // TODO: add fields
+  uint64_t whole;
+  uint64_t fractional;
+  //Codes for the tag
+  // 1 -> valid/non-negative
+  // 2 -> valid/negative
+  // 3 -> error value
+  // 4 -> positive overflow value
+  // 5 -> negative overflow value
+  // 4 -> positive underflow value
+  // 5 -> negative underflow value
+  int tag;
 } Fixedpoint;
 
 // Create a Fixedpoint value representing an integer.

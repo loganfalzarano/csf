@@ -10,8 +10,16 @@ static Fixedpoint DUMMY;
 
 Fixedpoint fixedpoint_create(uint64_t whole) {
   // TODO: implement
-  assert(0);
-  return DUMMY;
+  Fixedpoint res;
+  res.whole = whole;
+  res.fractional = 0
+  if (whole >= 0) {
+    res.tag = 1;
+  } else {
+    res.tag = 2;
+  }
+  //assert(0);
+  return res;
 }
 
 Fixedpoint fixedpoint_create2(uint64_t whole, uint64_t frac) {
