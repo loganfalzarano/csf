@@ -35,17 +35,10 @@ Fixedpoint fixedpoint_create2(uint64_t whole, uint64_t frac) {
 Fixedpoint fixedpoint_create_from_hex(const char *hex) {
   // TODO: implement
 
-  // Iterate from right until the '.' to get the frac_part
-  // Iterate from '.' until index is 0 to get the whole_part
+  //here we want to use sscanf and bitsifting to make the conversion
+  int store_value;
+  sscanf(hex, "%x" , &store_value);
 
-
-  // int i = strlen(hex) - 1;
-  // while (hex[i] != '.') { //TODO: deal with empty string
-
-  // }
-  // while (i >= 0) {
-
-  // }
   assert(0);
   return DUMMY;
 }
