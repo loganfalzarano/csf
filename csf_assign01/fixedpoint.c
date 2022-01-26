@@ -10,6 +10,9 @@ static Fixedpoint DUMMY;
 
 Fixedpoint fixedpoint_create(uint64_t whole) {
   // TODO: implement
+
+  //this can only create non-negative values
+
   Fixedpoint res;
   res.whole = whole;
   res.fractional = 0
@@ -24,6 +27,9 @@ Fixedpoint fixedpoint_create(uint64_t whole) {
 
 Fixedpoint fixedpoint_create2(uint64_t whole, uint64_t frac) {
   // TODO: implement
+
+  //this can only create non-negative values
+
   assert(0);
   return DUMMY;
 }
