@@ -35,13 +35,24 @@ Fixedpoint fixedpoint_create2(uint64_t whole, uint64_t frac) {
 Fixedpoint fixedpoint_create_from_hex(const char *hex) {
   // TODO: This isn't correct but it's an idea
 
-  //find where the '.' occurs to split into whole and fractional
-  for (int dot_index = 0; i < strlen(hex); i++) {
+  //Determine if there's a negative sign
+  bool is_negative false;
+  if (hex[0] == '-') is_negative = true;
+
+  //find whether/where the '.' occurs to split into whole and fractional
+  int dot_index = -1;
+  for (; i < strlen(hex); i++) {
     if (hex[dot_index] == '.') {
-      break
+      break;
     }
   }
-  //split the hex string into two strings 
+  //if we can't find a dot
+  if (dot_index == -1) {
+    //read only the whole part and deal with the negative
+  }
+
+
+  //Otherwise there is a dot and split the hex string into two strings 
   char whole_hex[dot_index];
   char frac_hex[strlen(hex) - dot_index];
   for (int j = 0; j < dot_index; i++) {
