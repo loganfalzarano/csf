@@ -45,11 +45,6 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
   // bool is_negative = false;
   // if (hex[0] == '-') is_negative = true;
 
-  // int len = strlen(hex);
-  // if (len > 34) {
-  //   hex.tag = 3;
-  // }
-
   //find whether/where the '.' occurs to split into whole and fractional
   int dot_index = -1;
   for (; dot_index < strlen(hex); dot_index++) {
@@ -66,11 +61,27 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
   //Otherwise there is a dot and split the hex string into two strings 
   char whole_hex[dot_index];
   char frac_hex[strlen(hex) - dot_index];
+
+  // Reads in whole value
   for (int j = 0; j < dot_index; j++) {
     whole_hex[j] = hex[j];
+    if (hex[j] == '-' && j == 0) {
+      continue;
+    }
+    if (!((hex[j] >= 'a' && hex[j] <= 'f') || (hex[j] >= '0' || hex[j] <= '9'))) {
+      res.tag = 3;
+    }
   }
+
+  // Reads in fractional value
   for (int k = 0; k + dot_index < strlen(hex); k++) {
-    frac_hex[k] = hex[dot_index + k];
+    
+    char x = hex[dot_index + k];
+    frac_hex[k] = x;
+
+    if (!((x >= 'a' && x <= 'f') || (x >= '0' || x <= '9'))) {
+        res.tag = 3;
+      }
   }
 
   uint64_t whole_val;
