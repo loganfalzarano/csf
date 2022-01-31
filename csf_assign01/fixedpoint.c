@@ -35,6 +35,7 @@ Fixedpoint fixedpoint_create2(uint64_t whole, uint64_t frac) {
 
 Fixedpoint fixedpoint_create_from_hex(const char *hex) {
   // TODO: This isn't correct but it's an idea
+  printf("got here");
 
   //Determine if there's a negative sign
   Fixedpoint res;
@@ -46,7 +47,18 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
   // if (hex[0] == '-') is_negative = true;
 
   //find whether/where the '.' occurs to split into whole and fractional
-  int dot_index = -1;
+  char *hex1 = "aaa.aaa";
+  char *dot_char = strchr(hex1, '.');
+  int dot_index;
+  if (dot_char == NULL) {
+    return res;
+  } else {
+    dot_index = (int)(dot_char - hex1);
+    printf("%s %d\n\n\n\n", hex1, dot_index);
+  }
+  
+  
+
   for (; dot_index < strlen(hex); dot_index++) {
     if (hex[dot_index] == '.') {
       break;
