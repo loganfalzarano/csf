@@ -39,7 +39,11 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
 
   //Determine if there's a negative sign
   Fixedpoint res;
-  if (hex[0] == '-') res.tag = 2;
+  if (hex[0] == '-') {
+    res.tag = 2;
+    hex = hex + 1;  
+  }
+  
 
 
   //Determine if there's a negative sign
@@ -47,7 +51,13 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
   // if (hex[0] == '-') is_negative = true;
 
   //find whether/where the '.' occurs to split into whole and fractional
-  char *hex1 = "aaa.aaa";
+  char *hex1 = "-6666666666666666.8888888888888888";
+  if (hex1[0] == '-') {
+      res.tag = 2;
+      hex1 = hex1 + 1;  
+      printf("Woo hoo %s", hex1);
+  }
+
   char *dot_char = strchr(hex1, '.');
   int dot_index;
   if (dot_char == NULL) {
@@ -56,6 +66,21 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
     dot_index = (int)(dot_char - hex1);
     printf("%s %d\n\n\n\n", hex1, dot_index);
   }
+
+  char first[dot_index + 1];
+  printf("GOTHERE");
+  strncpy(first, hex1, dot_index);
+  first[dot_index] = "\0";
+  printf("PLEASE: %s END", first);
+
+  uint64_t w;
+  uint64_t f;
+  char d;
+
+  sscanf(hex1, "%x%c%x", &w, &d, &f);
+  printf("Whole:%d    Frac:%d", w,f);
+
+  
   
   
 
