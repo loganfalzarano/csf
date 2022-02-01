@@ -4,7 +4,6 @@
 #include <stdint.h>
 
 typedef struct {
-  // TODO: add fields
   uint64_t whole_part;
   uint64_t frac_part;
   //Codes for the tag
@@ -13,8 +12,8 @@ typedef struct {
   // 3 -> error value
   // 4 -> positive overflow value
   // 5 -> negative overflow value
-  // 4 -> positive underflow value
-  // 5 -> negative underflow value
+  // 6 -> positive underflow value
+  // 7 -> negative underflow value
   int tag;
 } Fixedpoint;
 
