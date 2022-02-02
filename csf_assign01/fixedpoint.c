@@ -34,50 +34,46 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
 
   //initialize object to be returned and reassign hex
   Fixedpoint res;
+
   res.tag = 1; //Assume it's valid unless we see otherwise
-  char hex1[90] = "123xabc.4";
-  
-  //strip off the negative if there is one
-  if (hex1[0] == '-') {
-    res.tag = 2; //set value to be valid negative
-    //hex1 = hex1 + 1;  //TODO MAKE SURE TO CHANGE BACK TO HEX
+
+  //const char * hex = "0.d";
+
+  char first_part[17];
+  int hex_index = 0;
+  int index = 0;
+  while (index < strlen(hex) && hex[hex_index] != '.' && index <= 16) {
+    printf("char is: %c, index is: %d\n", hex[hex_index], index);
+    if (hex[hex_index] == '-') {
+      res.tag = 2;
+      hex_index++;
+      continue;
+    }
+    first_part[index] = hex[hex_index];
+    index++;
+    hex_index++;
   }
-  printf("\n(1)\n");
+  first_part[index] = 0;
+  char second_part[17];
+  hex_index++;
+  index = 0;
+  while (hex_index < strlen(hex) && index <= 16) {
+    printf("second part: char is: %c, index is: %d\n", hex[hex_index], index);
+    second_part[index] = hex[hex_index];
+    index++;
+    hex_index++;
+  }
+  second_part[index] = 0;
 
-  //split the hex string into two parts
-    //char hex1[50] = "-.0";
-  char * first_part = strtok(hex1, ".");
-  printf("\n(2)\n");
-  char * second_part = strtok(NULL, " "); // TODO: Use "\0" or " "
-
-  printf( "|%s|\n", hex1 );
-  printf( "|%s|\n", first_part ); //printing the token
-  printf("|%s| wowowowowoo\n", second_part);
+  printf("FIRSRT PART IS: |%s|", first_part);
+  printf("SECOND PART IS: |%s|", second_part);
   
-
-  //deal with special case "0.0", "", etc"
-  if (first_part == NULL && second_part == NULL) { //if both are NULL it's invalid
+  //check that all characters are valid hex characters
+  if (strlen(first_part) > 16 || strlen(second_part) > 16) {
     res.tag = 3;
-    printf("Found error value\n\n");
-    return res;
-  } else if (first_part == NULL && second_part != NULL) { //if the first part is NULL and second part is non-NULL whole part is 0
-    first_part = "0\0";
-  } else if (second_part == NULL && first_part != NULL) { //if the second part is NULL and the second part is non-NULL frac part is 0
-    second_part = "0\0";
+    printf("Error, too many characters");
   }
-  printf("\n(3)\n");
-
-  printf( "|%s|\n", hex1 );
-  printf( "|%s|\n", first_part ); //printing the token
-  printf("|%s|\n", second_part);
-
-  //check that both strings are valid (error checking)
-  //TODO:check that the values are not too BIG
-
   for (size_t i = 0; i < strlen(first_part); i++) {
-    //printf("char is: %c \n", first_part[i]);
-    //printf("between a and f: %d\n", (first_part[i] >= 'a' && first_part[i] <= 'f'));
-    //printf("between 0 and 9\n", (first_part[i] >= '0' || first_part[i] <= '9'));
     if (!((first_part[i] >= 'a' && first_part[i] <= 'f') || (first_part[i] >= '0' && first_part[i] <= '9'))) {
       res.tag = 3;
       printf("Found error value\n\n");
@@ -92,27 +88,15 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
     }
   }
 
-
   //now we can read in the integers to the whole_part and frac_part
-  res.whole_part = strtoul(first_part, NULL, 16);
-  res.frac_part = strtoul(second_part, NULL, 16);
+  res.whole_part = (uint64_t)strtoul(first_part, NULL, 16); //automatically returns 0 if string is emtpy
+  res.frac_part = (uint64_t)strtoul(second_part, NULL, 16);
   if (res.whole_part == 0 && res.frac_part == 0) res.tag = 1;
 
   printf("\n\nWhole part is: %ld\nFrac part is: %ld\n", res.whole_part, res.frac_part);
   printf("tag is: %d\n\n\n", res.tag);
-
-
-
-
-
-  
-
-
-
-  
-  
-  
-  
+  return res;
+ 
 
 /* 
   //Determine if there's a negative sign
@@ -205,24 +189,6 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
         res.tag = 3;
       }
   }
-
-  uint64_t whole_val;
-  uint64_t frac_val;
-
-  sscanf(whole_hex, "%x", &whole_hex);
-  sscanf(frac_hex, "%x", &frac_val);
-
-  //here we want to use sscanf and bitshifting to make the conversion
-  //int store_value;
-  //sscanf(hex, "%x" , &store_value);
-
-  //Fixedpoint res;
-  res.whole_part = whole_hex;
-  res.frac_part = frac_val;
-  //res.tag = 1;
-
-  assert(0);
-  return res;
 
  */  
 }
