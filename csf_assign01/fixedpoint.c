@@ -109,9 +109,31 @@ uint64_t fixedpoint_frac_part(Fixedpoint val) {
 }
 
 Fixedpoint fixedpoint_add(Fixedpoint left, Fixedpoint right) {
-  // TODO: implement
-  assert(0);
-  return DUMMY;
+  Fixedpoint left1 = fixedpoint_create2(-9, 2);
+  Fixedpoint right1 = fixedpoint_create2(7, 3);
+  //printf("The left most bit is: %d");
+  Fixedpoint res;
+  uint64_t carry = 0;
+  res.frac_part = left1.frac_part + right1.frac_part;
+  if (left1.tag == right1.tag) {
+    if (res.frac_part < left1.frac_part || res.frac_part < right1.frac_part) {
+      uint64_t carry = 1;
+    }
+    res.whole_part = left1.whole_part + right1.whole_part + carry;  
+    if (res.whole_part < left1.whole_part || res.whole_part < right1.whole_part) {
+      res.tag = 4;
+      //indicate overflow
+    } 
+  } else {
+    //do subtraction with a negated value instead
+  }
+
+
+  printf("\nWhole part is %ld\n", res.whole_part);
+  printf("Frac part is %ld\n\n", res.frac_part);
+
+  
+  return res;
 }
 
 Fixedpoint fixedpoint_sub(Fixedpoint left, Fixedpoint right) {
@@ -121,9 +143,16 @@ Fixedpoint fixedpoint_sub(Fixedpoint left, Fixedpoint right) {
 }
 
 Fixedpoint fixedpoint_negate(Fixedpoint val) {
-  // TODO: implement
-  assert(0);
-  return DUMMY;
+  //don't switch sign for a zero value
+  if (!fixedpoint_is_zero) {
+    //toggle negative to positve and vice a verse
+    if (val.tag == 1) {
+      val.tag = 2;
+    } else if (val.tag == 2) {
+      val.tag = 1;
+    }
+  }
+  return val;
 }
 
 Fixedpoint fixedpoint_halve(Fixedpoint val) {
@@ -189,9 +218,31 @@ int fixedpoint_is_valid(Fixedpoint val) {
 }
 
 char *fixedpoint_format_as_hex(Fixedpoint val) {
-  // TODO: implement
+  /* // TODO: implement
   assert(0);
   char *s = malloc(20);
   strcpy(s, "<invalid>");
+  return s; */
+
+
+  // TODO: implement
+  char *s = malloc(34);
+
+  //TODO: Deal with issue of trailing zeros
+
+  if (fixedpoint_is_zero(val)) {
+    strcpy(s, "0");
+  } else if (val.tag == 1 && val.frac_part == 0) {
+    sprintf(s, "%lx", val.whole_part);
+  } else if (val.tag == 2 && val.frac_part == 0) {
+    sprintf(s, "-%lx", val.whole_part);
+  } else if (val.tag == 1 && val.frac_part != 0) {
+    sprintf(s, "%lx.%016lx", val.whole_part, val.frac_part);
+  } else if (val.tag == 2 && val.frac_part != 0) {
+    sprintf(s, "-%lx.%016lx", val.whole_part, val.frac_part);
+  }
+
+  printf("\n\n The string is: %s\n\n", s);
+  
   return s;
 }
