@@ -44,7 +44,7 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
   int index = 0;
   while (index < strlen(hex) && hex[hex_index] != '.' && index <= 16) {
     //printf("char is: %c, index is: %d\n", hex[hex_index], index);
-    if (hex[hex_index] == '-') {
+    if (hex[hex_index] == '-') { // Second statement ensures we don't continue if there is a dash in the middle of the number
       res.tag = 2;
       hex_index++;
       continue;
@@ -123,7 +123,7 @@ Fixedpoint fixedpoint_add(Fixedpoint left, Fixedpoint right) {
     if (res.whole_part < left1.whole_part || res.whole_part < right1.whole_part) {
       res.tag = 4;
       //indicate overflow
-    } 
+    }
   } else {
     //do subtraction with a negated value instead
   }
@@ -137,9 +137,34 @@ Fixedpoint fixedpoint_add(Fixedpoint left, Fixedpoint right) {
 }
 
 Fixedpoint fixedpoint_sub(Fixedpoint left, Fixedpoint right) {
-  // TODO: implement
-  assert(0);
-  return DUMMY;
+  Fixedpoint res;
+  if (left.tag == 1 && right.tag == 1) {
+    if (left.whole_part > right.whole_part) {
+      res.whole_part = left.whole_part - right.whole_part;
+      if (left.frac_part > right.frac_part) {
+        res.frac_part = left.frac_part - right.frac_part;
+      } else {
+        res.frac_part = right.frac_part - left.frac_part;
+      }
+    } else { // right > left or right == left
+      res.whole_part = right.whole_part - left.whole_part;
+      if (left.frac_part > right.frac_part) {
+        res.frac_part = left.frac_part - right.frac_part;
+      } else {
+        res.frac_part = right.frac_part - left.frac_part;
+      }
+    }
+  }
+  else if (left.tag == 2 && right.tag ==1) {
+    res = fixedpoint_negate(fixedpoint_add(fixedpoint_negate(left), right));
+  }
+  else if (left.tag == 1 && right.tag == 2 || left.tag == 2 && right.tag == 2) {
+    res = fixedpoint_add(left, fixedpoint_negate(right));
+  }
+  else {
+    // NEED TO ACCOUNT FOR UNDERFLOW
+  }
+  return res;
 }
 
 Fixedpoint fixedpoint_negate(Fixedpoint val) {
@@ -156,20 +181,58 @@ Fixedpoint fixedpoint_negate(Fixedpoint val) {
 }
 
 Fixedpoint fixedpoint_halve(Fixedpoint val) {
-  // TODO: implement
-  assert(0);
-  return DUMMY;
+  Fixedpoint res = val;
+  uint64_t carry = 0;
+
+  if (!fixedpoint_is_zero(val)) {
+    res.whole_part = val.whole_part / 2;
+    if (val.whole_part % 2 != 0)
+    {
+      carry = 1;
+    }
+    res.frac_part =  carry + val.frac_part / 2;
+    if (val.frac_part % 2 != 0)
+    {
+      res.tag = res.tag + 5;
+    }
+  }
+  return res;
 }
 
 Fixedpoint fixedpoint_double(Fixedpoint val) {
-  // TODO: implement
-  assert(0);
-  return DUMMY;
+  Fixedpoint res = val;
+  uint64_t carry = 0;
+
+  if (!fixedpoint_is_zero(val)) {
+    if (val.frac_part * 2 < val.frac_part)
+    {
+      carry = 1;
+    }
+    res.frac_part = val.frac_part * 2;
+    if (val.whole_part * 2 < val.whole_part)
+    {
+      res.tag = res.tag + 3;
+    }
+    res.whole_part = val.whole_part * 2 + carry;
+  }
+  return res;
 }
 
 int fixedpoint_compare(Fixedpoint left, Fixedpoint right) {
-  // TODO: implement
-  assert(0);
+  int returnVal = 0;
+  if (fixedpoint_is_neg(left) == 0 && fixedpoint_is_neg(right) == 1) {
+    return 1;
+  } else if (fixedpoint_is_neg(left) == 1 && fixedpoint_is_neg(right) == 0) {
+    return -1;
+  } else if (left.whole_part > right.whole_part) {
+    return 1;
+  } else if (left.whole_part < right.whole_part) {
+    return -1;
+  } else { // whole parts are equal
+    if (left.frac_part == right.frac_part) {
+      return 0;
+      }
+    } 
   return 0;
 }
 
@@ -178,39 +241,27 @@ int fixedpoint_is_zero(Fixedpoint val) {
 }
 
 int fixedpoint_is_err(Fixedpoint val) {
-  // TODO: implement
-  assert(0);
-  return 0;
+  return val.tag == 3;
 }
 
 int fixedpoint_is_neg(Fixedpoint val) {
-  // TODO: implement
-  assert(0);
-  return 0;
+  return val.tag == 2;
 }
 
 int fixedpoint_is_overflow_neg(Fixedpoint val) {
-  // TODO: implement
-  assert(0);
-  return 0;
+  return val.tag == 5;
 }
 
 int fixedpoint_is_overflow_pos(Fixedpoint val) {
-  // TODO: implement
-  assert(0);
-  return 0;
+  return val.tag == 4;
 }
 
 int fixedpoint_is_underflow_neg(Fixedpoint val) {
-  // TODO: implement
-  assert(0);
-  return 0;
+  return val.tag == 7;
 }
 
 int fixedpoint_is_underflow_pos(Fixedpoint val) {
-  // TODO: implement
-  assert(0);
-  return 0;
+  return val.tag == 6;
 }
 
 int fixedpoint_is_valid(Fixedpoint val) {
