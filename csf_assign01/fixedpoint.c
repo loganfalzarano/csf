@@ -219,21 +219,59 @@ Fixedpoint fixedpoint_double(Fixedpoint val) {
 }
 
 int fixedpoint_compare(Fixedpoint left, Fixedpoint right) {
+
+  // no error handling, not sure if we need it
+
   int returnVal = 0;
+  if (left.whole_part == right.whole_part && left.frac_part == right.frac_part && left.tag == right.tag) {
+    return 0;
+  }
   if (fixedpoint_is_neg(left) == 0 && fixedpoint_is_neg(right) == 1) {
+    // left is positive & right is negative
     return 1;
   } else if (fixedpoint_is_neg(left) == 1 && fixedpoint_is_neg(right) == 0) {
+    // left is negative & right is positive
     return -1;
-  } else if (left.whole_part > right.whole_part) {
-    return 1;
-  } else if (left.whole_part < right.whole_part) {
-    return -1;
-  } else { // whole parts are equal
-    if (left.frac_part == right.frac_part) {
-      return 0;
+  } else { // left and right have same sign
+    if (left.whole_part > right.whole_part) {
+      if (fixedpoint_is_neg(left)) {
+        // both are negative & left is more negative than right
+        return -1;
+      } else {
+        // both are positive & left is less than right
+        return 1;
       }
-    } 
-  return 0;
+    } else if (left.whole_part < right.whole_part) {
+      if (fixedpoint_is_neg(left)) {
+        // both are negative & left is less negative than right
+        return 1;
+      } else {
+        // both are positive & left is greater than right
+        return -1;
+      }
+    } else {
+      // whole parts are equal
+      if (left.frac_part > right.frac_part) {
+        if (fixedpoint_is_neg(left)) {
+          // both are negative & left is more negative than right
+          return -1;
+        } else {
+          // both are positive & left is less than right
+          return 1;
+        }
+      } else if (left.frac_part < right.frac_part) {
+        if (fixedpoint_is_neg(left)) {
+          // both are negative & left is less negative than right
+          return 1;
+        } else {
+          // both are positive & left is greater than right
+          return -1;
+        }
+      } else {
+        return  0;
+      }
+    }
+  }
 }
 
 int fixedpoint_is_zero(Fixedpoint val) {
