@@ -169,7 +169,7 @@ Fixedpoint fixedpoint_sub(Fixedpoint left, Fixedpoint right) {
 
 Fixedpoint fixedpoint_negate(Fixedpoint val) {
   //don't switch sign for a zero value
-  if (!fixedpoint_is_zero) {
+  if (!fixedpoint_is_zero(val)) {
     //toggle negative to positve and vice a verse
     if (val.tag == 1) {
       val.tag = 2;
