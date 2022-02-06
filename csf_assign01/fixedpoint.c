@@ -288,10 +288,18 @@ char *fixedpoint_format_as_hex(Fixedpoint val) {
   } else if (val.tag == 2 && val.frac_part == 0) {
     sprintf(s, "-%lx", val.whole_part);
   } else if (val.tag == 1 && val.frac_part != 0) {
-    sprintf(s, "%lx.%016lx", val.whole_part, val.frac_part);
+    sprintf(s, "%lx.%lx", val.whole_part, val.frac_part);
   } else if (val.tag == 2 && val.frac_part != 0) {
-    sprintf(s, "-%lx.%016lx", val.whole_part, val.frac_part);
+    sprintf(s, "-%lx.%lx", val.whole_part, val.frac_part);
   }
+
+  for(int i = strlen(s); i >= 0; i--) {
+    if (s[i] != 0) {
+      s[i] = 0;
+      break;
+    }
+  }
+  
 
   printf("\n\n The string is: %s\n\n", s);
   
