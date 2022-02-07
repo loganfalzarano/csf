@@ -108,30 +108,8 @@ uint64_t fixedpoint_frac_part(Fixedpoint val) {
 }
 
 Fixedpoint fixedpoint_add(Fixedpoint left, Fixedpoint right) {
-  // Fixedpoint left1 = fixedpoint_create2(-9, 2);
-  // Fixedpoint right1 = fixedpoint_create2(7, 3);
-  // //printf("The left most bit is: %d");
-  // Fixedpoint res;
-  // uint64_t carry = 0;
-  // res.frac_part = left1.frac_part + right1.frac_part;
-  // if (left1.tag == right1.tag) {
-  //   if (res.frac_part < left1.frac_part || res.frac_part < right1.frac_part) {
-  //     uint64_t carry = 1;
-  //   }
-  //   res.whole_part = left1.whole_part + right1.whole_part + carry;  
-  //   if (res.whole_part < left1.whole_part || res.whole_part < right1.whole_part) {
-  //     res.tag = 4;
-  //     //indicate overflow
-  //   }
-  // } else {
-  //   //do subtraction with a negated value instead
-  // }
-
-
-  // printf("\nWhole part is %ld\n", res.whole_part);
-  // printf("Frac part is %ld\n\n", res.frac_part);
-
   Fixedpoint res = left;
+  printf("LEft tad is: %d, right tag is%d\n", left.tag, right.tag);
   if (left.tag == right.tag) {
     res.whole_part = left.whole_part + right.whole_part;
     res.frac_part = left.frac_part + right.frac_part;
@@ -144,10 +122,12 @@ Fixedpoint fixedpoint_add(Fixedpoint left, Fixedpoint right) {
     }
     return res;
   } else if (fixedpoint_is_neg(left) && !fixedpoint_is_neg(right)) {
+    printf("went here\n");
     res = fixedpoint_sub(right, fixedpoint_negate(left));
   } else if (!fixedpoint_is_neg(left) && fixedpoint_is_neg(right)) {
     res = fixedpoint_sub(left, fixedpoint_negate(right));
   }
+  printf("Tag before the return is: %d\n", res.tag);
   
   return res;
 }
@@ -172,7 +152,7 @@ Fixedpoint fixedpoint_sub(Fixedpoint left, Fixedpoint right) {
     }
     res.tag = left.tag; 
   }
-  else if (left.tag == 2 && right.tag ==1) {
+  else if (left.tag == 2 && right.tag == 1) {
     res = fixedpoint_negate(fixedpoint_add(fixedpoint_negate(left), right));
   }
   else if ((left.tag == 1 && right.tag == 2) || (left.tag == 2 && right.tag == 2)) {
