@@ -249,6 +249,12 @@ void test_is_overflow_pos(TestObjs *objs) {
 
   sum = fixedpoint_sub(objs->max, negative_one);
   ASSERT(fixedpoint_is_overflow_pos(sum));
+
+  Fixedpoint lhs, rhs;
+  lhs = fixedpoint_create_from_hex("FFFFFFFFFFFFFFFF.b105");
+  rhs = fixedpoint_create_from_hex("FFFFFFFF.58");
+  sum = fixedpoint_add(lhs, rhs);
+  ASSERT(fixedpoint_is_overflow_pos(sum));
 }
 
 void test_is_err(TestObjs *objs) {
