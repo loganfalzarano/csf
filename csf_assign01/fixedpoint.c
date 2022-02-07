@@ -179,7 +179,7 @@ Fixedpoint fixedpoint_sub(Fixedpoint left, Fixedpoint right) {
     res = fixedpoint_add(left, fixedpoint_negate(right));
   }
   else {
-    return res; //Underflow???
+    return res; //Underflow??
   }
   return res;
 }
