@@ -236,6 +236,19 @@ void test_sub(TestObjs *objs) {
   ASSERT(0x0905000000000000UL == fixedpoint_frac_part(diff));
 }
 
+void test_sub_with_two_positive_values(TestObjs *objs) {
+  (void) objs;
+
+  Fixedpoint lhs, rhs, diff;
+
+  lhs = fixedpoint_create_from_hex("8e4af294.086b81ac");
+  rhs = fixedpoint_create_from_hex("82603e7c88.878367");
+  diff = fixedpoint_sub(lhs, rhs);
+  ASSERT(fixedpoint_is_neg(diff));
+  ASSERT(0x82ee896f1cUL == fixedpoint_whole_part(diff));
+  ASSERT(0x8feee8ac0UL == fixedpoint_frac_part(diff));
+}
+
 void test_is_overflow_pos(TestObjs *objs) {
   Fixedpoint sum;
 
