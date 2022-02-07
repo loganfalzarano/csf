@@ -197,6 +197,32 @@ void test_add(TestObjs *objs) {
   ASSERT(0x5be47e8ea0538c50UL == fixedpoint_frac_part(sum));
 }
 
+void test_add_with_second_value_negative(TestObjs *objs) {
+  (void) objs;
+
+  Fixedpoint lhs, rhs, sum;
+
+  lhs = fixedpoint_create_from_hex("d7da66a1cd2297b.a05");
+  rhs = fixedpoint_create_from_hex("-e2fed30121a5.72e");
+  sum = fixedpoint_add(lhs, rhs);
+  ASSERT(!fixedpoint_is_neg(sum));
+  ASSERT(0xd7cc36b49d107d6UL == fixedpoint_whole_part(sum));
+  ASSERT(0x2d7UL == fixedpoint_frac_part(sum));
+}
+
+void test_add_with_both_values_positive(TestObjs *objs) {
+  (void) objs;
+
+  Fixedpoint lhs, rhs, sum;
+
+  lhs = fixedpoint_create_from_hex("52bfd5fd96.09");
+  rhs = fixedpoint_create_from_hex("db7f4ad5a5f.1cc2c7c");
+  sum = fixedpoint_add(lhs, rhs);
+  ASSERT(!fixedpoint_is_neg(sum));
+  ASSERT(0xe0ab48357f5UL == fixedpoint_whole_part(sum));
+  ASSERT(0x25c2c7cUL == fixedpoint_frac_part(sum));
+}
+
 void test_sub(TestObjs *objs) {
   (void) objs;
 
