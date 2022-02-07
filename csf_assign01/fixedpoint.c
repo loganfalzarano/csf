@@ -3,11 +3,10 @@
 #include <string.h>
 #include <ctype.h>
 #include <assert.h>
-#include <stdbool.h>
 #include "fixedpoint.h"
 
 // You can remove this once all of the functions are fully implemented
-static Fixedpoint DUMMY;
+//static Fixedpoint DUMMY;
 
 Fixedpoint fixedpoint_create(uint64_t whole) {
   //this can only create non-negative values
@@ -40,8 +39,8 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
   //const char * hex = "0.d";
 
   char first_part[17];
-  int hex_index = 0;
-  int index = 0;
+  size_t hex_index = 0;
+  size_t index = 0;
   while (index < strlen(hex) && hex[hex_index] != '.' && index <= 16) {
     //printf("char is: %c, index is: %d\n", hex[hex_index], index);
     if (hex[hex_index] == '-') { // Second statement ensures we don't continue if there is a dash in the middle of the number
@@ -171,7 +170,7 @@ Fixedpoint fixedpoint_sub(Fixedpoint left, Fixedpoint right) {
   else if (left.tag == 2 && right.tag ==1) {
     res = fixedpoint_negate(fixedpoint_add(fixedpoint_negate(left), right));
   }
-  else if (left.tag == 1 && right.tag == 2 || left.tag == 2 && right.tag == 2) {
+  else if ((left.tag == 1 && right.tag == 2) || (left.tag == 2 && right.tag == 2)) {
     res = fixedpoint_add(left, fixedpoint_negate(right));
   }
   else {
@@ -238,7 +237,7 @@ int fixedpoint_compare(Fixedpoint left, Fixedpoint right) {
 
   // no error handling, not sure if we need it
 
-  int returnVal = 0;
+  //int returnVal = 0;
   if (left.whole_part == right.whole_part && left.frac_part == right.frac_part && left.tag == right.tag) {
     return 0;
   }
