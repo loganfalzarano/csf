@@ -155,7 +155,7 @@ Fixedpoint fixedpoint_sub(Fixedpoint left, Fixedpoint right) {
   else if (left.tag == 2 && right.tag == 1) {
     res = fixedpoint_negate(fixedpoint_add(fixedpoint_negate(left), right));
   }
-  else if ((left.tag == 1 && right.tag == 2) || (left.tag == 2 && right.tag == 2)) {
+  else if ((left.tag == 1 && right.tag == 2)) {
     res = fixedpoint_add(left, fixedpoint_negate(right));
   }
   else {
