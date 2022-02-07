@@ -131,7 +131,7 @@ Fixedpoint fixedpoint_add(Fixedpoint left, Fixedpoint right) {
   // printf("\nWhole part is %ld\n", res.whole_part);
   // printf("Frac part is %ld\n\n", res.frac_part);
 
-  Fixedpoint res;
+  Fixedpoint res = left;
   if (left.tag == right.tag) {
     res.whole_part = left.whole_part + right.whole_part;
     res.frac_part = left.frac_part + right.frac_part;
@@ -143,6 +143,10 @@ Fixedpoint fixedpoint_add(Fixedpoint left, Fixedpoint right) {
       res.tag = left.tag + 3; //positive/negative overflow
     }
     return res;
+  } else if (fixedpoint_is_neg(left) && !fixedpoint_is_neg(right)) {
+    fixedpoint_sub(right, fixedpoint_negate(left));
+  } else if (!fixedpoint_is_neg(left) && fixedpoint_is_neg(right)) {
+    fixedpoint_sub(left, fixedpoint_negate(right));
   }
   
   return res;
