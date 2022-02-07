@@ -51,6 +51,9 @@ int main(int argc, char **argv) {
   TEST(test_is_overflow_pos);
   TEST(test_is_err);
 
+  //Our tests
+  TEST(test_create_from_hex_special_cases);
+
   // IMPORTANT: if you add additional test functions (which you should!),
   // make sure they are included here.  E.g., if you add a test function
   // "my_awesome_tests", you should add
@@ -255,6 +258,50 @@ void test_is_err(TestObjs *objs) {
 }
 
 // TODO: implement more test functions
+void test_create_from_hex_special_cases(TestObjs *objs) {
+  (void) objs;
+
+  //special cases for 0
+  Fixedpoint val1 = fixedpoint_create_from_hex("0.0");
+  ASSERT(fixedpoint_is_valid(val1));
+  ASSERT(0x0UL == fixedpoint_whole_part(val1));
+  ASSERT(0x0UL == fixedpoint_frac_part(val1));
+
+  Fixedpoint val2 = fixedpoint_create_from_hex("0.");
+  ASSERT(fixedpoint_is_valid(val2));
+  ASSERT(0x0UL == fixedpoint_whole_part(val2));
+  ASSERT(0x0UL == fixedpoint_frac_part(val2));
+
+  Fixedpoint val3 = fixedpoint_create_from_hex("-0.0");
+  ASSERT(fixedpoint_is_valid(val3));
+  ASSERT(0x0UL == fixedpoint_whole_part(val3));
+  ASSERT(0x0UL == fixedpoint_frac_part(val3));
+
+  Fixedpoint val4 = fixedpoint_create_from_hex("-.0");
+  ASSERT(fixedpoint_is_valid(val4));
+  ASSERT(0x0UL == fixedpoint_whole_part(val4));
+  ASSERT(0x0UL == fixedpoint_frac_part(val4));
+
+  Fixedpoint val5 = fixedpoint_create_from_hex("0.0");
+  ASSERT(fixedpoint_is_valid(val5));
+  ASSERT(0x0UL == fixedpoint_whole_part(val5));
+  ASSERT(0x0UL == fixedpoint_frac_part(val5));
+
+  //Can handle upper case as well
+  Fixedpoint val6 = fixedpoint_create_from_hex("A.A");
+  ASSERT(fixedpoint_is_valid(val6));
+  ASSERT(0xAUL == fixedpoint_whole_part(val6));
+  ASSERT(0xA000000000000000UL == fixedpoint_frac_part(val6));
+
+  //Can handle upper case as well
+  Fixedpoint val7 = fixedpoint_create_from_hex("ABCDEF.ABCDEF");
+  ASSERT(fixedpoint_is_valid(val7));
+  ASSERT(0xABCDEFUL == fixedpoint_whole_part(val7));
+  ASSERT(0xABCDEF0000000000UL == fixedpoint_frac_part(val7));
+}
+
+
+
 
 //Note from Logan:
 //Test ".0990", ".", "09234."

@@ -74,14 +74,14 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
     //printf("Error, too many characters");
   }
   for (size_t i = 0; i < strlen(first_part); i++) {
-    if (!((first_part[i] >= 'a' && first_part[i] <= 'f') || (first_part[i] >= '0' && first_part[i] <= '9'))) {
+    if (!((first_part[i] >= 'a' && first_part[i] <= 'f') || (first_part[i] >= 'A' && first_part[i] <= 'F') || (first_part[i] >= '0' && first_part[i] <= '9'))) {
       res.tag = 3;
       //printf("Found error value\n\n");
       return res; //TODO: return res or retun NULL
     }
   }
   for (size_t j = 0; j < strlen(second_part); j++) {
-    if (!((second_part[j] >= 'a' && second_part[j] <= 'f') || (second_part[j] >= '0' && second_part[j] <= '9'))) {
+    if (!((second_part[j] >= 'a' && second_part[j] <= 'f') || (first_part[j] >= 'A' && first_part[j] <= 'F') || (second_part[j] >= '0' && second_part[j] <= '9'))) {
       //printf("Found error value\n\n");
       res.tag = 3;
       return res; //TODO: return res or retun NULL
@@ -334,7 +334,7 @@ char *fixedpoint_format_as_hex(Fixedpoint val) {
   char *s = malloc(34);
 
   //TODO: Deal with issue of trailing zeros
-
+  int is_decimal = 0;
   if (fixedpoint_is_zero(val)) {
     strcpy(s, "0");
   } else if (val.tag == 1 && val.frac_part == 0) {
@@ -342,20 +342,24 @@ char *fixedpoint_format_as_hex(Fixedpoint val) {
   } else if (val.tag == 2 && val.frac_part == 0) {
     sprintf(s, "-%lx", val.whole_part);
   } else if (val.tag == 1 && val.frac_part != 0) {
-    sprintf(s, "%lx.%lx", val.whole_part, val.frac_part);
+    sprintf(s, "%lx.%016lx", val.whole_part, val.frac_part);
+    is_decimal = 1;
   } else if (val.tag == 2 && val.frac_part != 0) {
-    sprintf(s, "-%lx.%lx", val.whole_part, val.frac_part);
+    sprintf(s, "-%lx.%016lx", val.whole_part, val.frac_part);
+    is_decimal = 1;
   }
-
-  for(int i = strlen(s); i >= 0; i--) {
-    if (s[i] != 0) {
-      s[i] = 0;
-      break;
+  if (is_decimal) {
+    for(int i = strlen(s) - 1; i >= 0; i--) {
+      if (s[i] != '0') {
+        s[i+1] = 0;
+        break;
+      }
     }
   }
   
+  
 
-  printf("\n\n The string is: %s\n\n", s);
+  //printf("\n\n The string is: %s\n\n", s);
   
   return s;
 }
