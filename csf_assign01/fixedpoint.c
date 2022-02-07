@@ -144,9 +144,9 @@ Fixedpoint fixedpoint_add(Fixedpoint left, Fixedpoint right) {
     }
     return res;
   } else if (fixedpoint_is_neg(left) && !fixedpoint_is_neg(right)) {
-    fixedpoint_sub(right, fixedpoint_negate(left));
+    res = fixedpoint_sub(right, fixedpoint_negate(left));
   } else if (!fixedpoint_is_neg(left) && fixedpoint_is_neg(right)) {
-    fixedpoint_sub(left, fixedpoint_negate(right));
+    res = fixedpoint_sub(left, fixedpoint_negate(right));
   }
   
   return res;
@@ -154,7 +154,7 @@ Fixedpoint fixedpoint_add(Fixedpoint left, Fixedpoint right) {
 
 Fixedpoint fixedpoint_sub(Fixedpoint left, Fixedpoint right) {
   Fixedpoint res;
-  if (left.tag == 1 && right.tag == 1) {
+  if (left.tag == right.tag) {
     if (left.whole_part > right.whole_part) {
       res.whole_part = left.whole_part - right.whole_part;
       if (left.frac_part > right.frac_part) {
@@ -170,6 +170,7 @@ Fixedpoint fixedpoint_sub(Fixedpoint left, Fixedpoint right) {
         res.frac_part = right.frac_part - left.frac_part;
       }
     }
+    res.tag = left.tag; 
   }
   else if (left.tag == 2 && right.tag ==1) {
     res = fixedpoint_negate(fixedpoint_add(fixedpoint_negate(left), right));
