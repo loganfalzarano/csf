@@ -109,7 +109,8 @@ uint64_t fixedpoint_frac_part(Fixedpoint val) {
 
 Fixedpoint fixedpoint_add(Fixedpoint left, Fixedpoint right) {
   Fixedpoint res = left;
-  printf("LEft tad is: %d, right tag is%d\n", left.tag, right.tag);
+  printf("\n\nLeft tag is: %d, right tag is: %d", left.tag, right.tag);
+  printf("\nLeft value is: %d, right value is: %d\n", (int)left.whole_part, (int)right.whole_part);
   if (left.tag == right.tag) {
     res.whole_part = left.whole_part + right.whole_part;
     res.frac_part = left.frac_part + right.frac_part;
@@ -128,12 +129,15 @@ Fixedpoint fixedpoint_add(Fixedpoint left, Fixedpoint right) {
     res = fixedpoint_sub(left, fixedpoint_negate(right));
   }
   printf("Tag before the return is: %d\n", res.tag);
+  printf("Value before return is: %d\n\n", (int)res.whole_part);
   
   return res;
 }
 
 Fixedpoint fixedpoint_sub(Fixedpoint left, Fixedpoint right) {
-  Fixedpoint res;
+  printf("\n\nLeft tag is: %d, right tag is: %d\n", left.tag, right.tag);
+  printf("Left value is: %d, right value is: %d\n", (int)left.whole_part, (int)right.whole_part);
+  Fixedpoint res = left;
   if (left.tag == right.tag) {
     if (left.whole_part > right.whole_part) {
       res.whole_part = left.whole_part - right.whole_part;
@@ -142,15 +146,16 @@ Fixedpoint fixedpoint_sub(Fixedpoint left, Fixedpoint right) {
       } else {
         res.frac_part = right.frac_part - left.frac_part;
       }
-    } else { // right > left or right == left
+    } else { // left < right or right == left
+    printf("went here x2\n");
       res.whole_part = right.whole_part - left.whole_part;
       if (left.frac_part > right.frac_part) {
         res.frac_part = left.frac_part - right.frac_part;
       } else {
         res.frac_part = right.frac_part - left.frac_part;
       }
+      res.tag = right.tag + 1;
     }
-    res.tag = left.tag; 
   }
   else if (left.tag == 2 && right.tag == 1) {
     res = fixedpoint_negate(fixedpoint_add(fixedpoint_negate(left), right));
