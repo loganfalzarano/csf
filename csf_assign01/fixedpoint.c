@@ -182,17 +182,20 @@ Fixedpoint fixedpoint_negate(Fixedpoint val) {
 
 Fixedpoint fixedpoint_halve(Fixedpoint val) {
   Fixedpoint res = val;
-  uint64_t carry = 0;
+  //uint64_t carry = 0;
 
   if (!fixedpoint_is_zero(val)) {
-    res.whole_part = val.whole_part / 2;
-    if (val.whole_part % 2 != 0)
-    {
-      carry = 1;
+    //res.whole_part = val.whole_part / 2;
+    res.whole_part = val.whole_part>>1;
+    res.frac_part = val.frac_part>>1;
+
+    if (val.whole_part % 2 != 0) {
+      //carry = 1;
+      res.frac_part = res.frac_part | 1UL<<63;
     }
-    res.frac_part =  carry + val.frac_part / 2;
-    if (val.frac_part % 2 != 0)
-    {
+
+    //res.frac_part =  carry + val.frac_part / 2;
+    if (val.frac_part % 2 != 0) {
       res.tag = res.tag + 5;
     }
   }
