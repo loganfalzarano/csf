@@ -109,29 +109,42 @@ uint64_t fixedpoint_frac_part(Fixedpoint val) {
 }
 
 Fixedpoint fixedpoint_add(Fixedpoint left, Fixedpoint right) {
-  Fixedpoint left1 = fixedpoint_create2(-9, 2);
-  Fixedpoint right1 = fixedpoint_create2(7, 3);
-  //printf("The left most bit is: %d");
+  // Fixedpoint left1 = fixedpoint_create2(-9, 2);
+  // Fixedpoint right1 = fixedpoint_create2(7, 3);
+  // //printf("The left most bit is: %d");
+  // Fixedpoint res;
+  // uint64_t carry = 0;
+  // res.frac_part = left1.frac_part + right1.frac_part;
+  // if (left1.tag == right1.tag) {
+  //   if (res.frac_part < left1.frac_part || res.frac_part < right1.frac_part) {
+  //     uint64_t carry = 1;
+  //   }
+  //   res.whole_part = left1.whole_part + right1.whole_part + carry;  
+  //   if (res.whole_part < left1.whole_part || res.whole_part < right1.whole_part) {
+  //     res.tag = 4;
+  //     //indicate overflow
+  //   }
+  // } else {
+  //   //do subtraction with a negated value instead
+  // }
+
+
+  // printf("\nWhole part is %ld\n", res.whole_part);
+  // printf("Frac part is %ld\n\n", res.frac_part);
+
   Fixedpoint res;
-  uint64_t carry = 0;
-  res.frac_part = left1.frac_part + right1.frac_part;
-  if (left1.tag == right1.tag) {
-    if (res.frac_part < left1.frac_part || res.frac_part < right1.frac_part) {
-      uint64_t carry = 1;
+  if (left.tag == right.tag) {
+    res.whole_part = left.whole_part + right.whole_part;
+    res.frac_part = left.frac_part + right.frac_part;
+
+    if (res.frac_part < left.frac_part || res.frac_part < right.frac_part) {
+      res.whole_part++;
     }
-    res.whole_part = left1.whole_part + right1.whole_part + carry;  
-    if (res.whole_part < left1.whole_part || res.whole_part < right1.whole_part) {
-      res.tag = 4;
-      //indicate overflow
+    if (res.whole_part < left.whole_part || res.whole_part < right.whole_part) {
+      res.tag = left.tag + 3; //positive/negative overflow
     }
-  } else {
-    //do subtraction with a negated value instead
+    return res;
   }
-
-
-  printf("\nWhole part is %ld\n", res.whole_part);
-  printf("Frac part is %ld\n\n", res.frac_part);
-
   
   return res;
 }
