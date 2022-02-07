@@ -197,6 +197,18 @@ void test_add(TestObjs *objs) {
   ASSERT(0x5be47e8ea0538c50UL == fixedpoint_frac_part(sum));
 }
 
+void test_add_fractions_carry_over(TestObjs *objs) {
+  (void) objs;
+
+  Fixedpoint lhs, rhs, sum;
+
+  lhs = fixedpoint_create2(2, 9);
+  rhs = fixedpoint_create2(2, 9);
+  sum = fixedpoint_add(lhs, rhs);
+  ASSERT(5 == fixedpoint_whole_part(sum));
+  ASSERT(8 == fixedpoint_frac_part(sum));
+}
+
 void test_add_with_second_value_negative(TestObjs *objs) {
   (void) objs;
 
