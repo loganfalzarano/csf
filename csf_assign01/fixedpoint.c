@@ -109,6 +109,8 @@ uint64_t fixedpoint_frac_part(Fixedpoint val) {
 
 Fixedpoint fixedpoint_add(Fixedpoint left, Fixedpoint right) {
   Fixedpoint res = left;
+  //right.whole_part = (uint16_t)right.whole_part;
+
   printf("\n\nLeft tag is: %d, right tag is: %d", left.tag, right.tag);
   printf("\nLeft value is: %d, right value is: %d\n", (int)left.whole_part, (int)right.whole_part);
   if (left.tag == right.tag) {
