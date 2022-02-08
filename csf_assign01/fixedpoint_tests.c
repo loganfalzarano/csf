@@ -210,11 +210,11 @@ void test_add_fractions_carry_over(TestObjs *objs) {
 
   Fixedpoint lhs, rhs, sum;
 
-  lhs = fixedpoint_create_from_hex("4.4000000000000000");
-  rhs = fixedpoint_create_from_hex("2.4000000000000000");
+  lhs = fixedpoint_create_from_hex("0.4000000000000000");
+  rhs = fixedpoint_create_from_hex("0.7000000000000000");
   sum = fixedpoint_add(lhs, rhs);
-  ASSERT(6 == fixedpoint_whole_part(sum));
-  ASSERT(0x8000000000000000 == fixedpoint_frac_part(sum));
+  ASSERT(1 == fixedpoint_whole_part(sum));
+  ASSERT(0x100000000000000UL == fixedpoint_frac_part(sum));
 }
 
 void test_add_with_second_value_negative(TestObjs *objs) {
@@ -227,7 +227,7 @@ void test_add_with_second_value_negative(TestObjs *objs) {
   sum = fixedpoint_add(lhs, rhs);
   ASSERT(!fixedpoint_is_neg(sum));
   ASSERT(0xd7cc36b49d107d6UL == fixedpoint_whole_part(sum));
-  ASSERT(0x2d7UL == fixedpoint_frac_part(sum));
+  ASSERT(0x2d70000000000000UL == fixedpoint_frac_part(sum));
 }
 
 void test_add_with_both_values_positive(TestObjs *objs) {
@@ -240,7 +240,7 @@ void test_add_with_both_values_positive(TestObjs *objs) {
   sum = fixedpoint_add(lhs, rhs);
   ASSERT(!fixedpoint_is_neg(sum));
   ASSERT(0xe0ab48357f5UL == fixedpoint_whole_part(sum));
-  ASSERT(0x25c2c7cUL == fixedpoint_frac_part(sum));
+  ASSERT(0x25c2c7c000000000UL == fixedpoint_frac_part(sum));
 }
 
 void test_sub(TestObjs *objs) {
@@ -266,7 +266,7 @@ void test_sub_with_two_positive_values(TestObjs *objs) {
   diff = fixedpoint_sub(lhs, rhs);
   ASSERT(fixedpoint_is_neg(diff));
   ASSERT(0x82ee896f1cUL == fixedpoint_whole_part(diff));
-  ASSERT(0x8feee8ac0UL == fixedpoint_frac_part(diff));
+  ASSERT(0x8feee8ac00000000UL == fixedpoint_frac_part(diff));
 }
 
 void test_is_overflow_pos(TestObjs *objs) {
