@@ -112,7 +112,7 @@ Fixedpoint fixedpoint_add(Fixedpoint left, Fixedpoint right) {
   //right.whole_part = (uint16_t)right.whole_part;
 
   printf("\n\nLeft tag is: %d, right tag is: %d", left.tag, right.tag);
-  printf("\nLeft value is: %d, right value is: %d\n", (int)left.whole_part, (int)right.whole_part);
+  printf("\nLeft value is: %d.%d, right value is: %d.%d\n", (int)left.whole_part, (int)left.frac_part, (int)right.whole_part, (int)right.frac_part);
   if (left.tag == right.tag) {
     res.whole_part = left.whole_part + right.whole_part;
     res.frac_part = left.frac_part + right.frac_part;
@@ -131,7 +131,7 @@ Fixedpoint fixedpoint_add(Fixedpoint left, Fixedpoint right) {
     res = fixedpoint_sub(left, fixedpoint_negate(right));
   }
   printf("Tag before the return is: %d\n", res.tag);
-  printf("Value before return is: %d\n\n", (int)res.whole_part);
+  printf("Value before return is: %d.%d\n\n", (int)res.whole_part, (int)res.frac_part);
   
   return res;
 }
@@ -226,19 +226,14 @@ Fixedpoint fixedpoint_double(Fixedpoint val) {
 }
 
 int fixedpoint_compare(Fixedpoint left, Fixedpoint right) {
-
-  // no error handling, not sure if we need it
-
   //int returnVal = 0;
   if (left.whole_part == right.whole_part && left.frac_part == right.frac_part && left.tag == right.tag) {
     return 0;
   }
   if (fixedpoint_is_neg(left) == 0 && fixedpoint_is_neg(right) == 1) {
-    // left is positive & right is negative
-    return 1;
+    return 1; // left is positive & right is negative
   } else if (fixedpoint_is_neg(left) == 1 && fixedpoint_is_neg(right) == 0) {
-    // left is negative & right is positive
-    return -1;
+    return -1; // left is negative & right is positive
   } else { // left and right have same sign
     if (left.whole_part > right.whole_part) {
       if (fixedpoint_is_neg(left)) {

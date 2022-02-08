@@ -55,6 +55,10 @@ int main(int argc, char **argv) {
   TEST(test_sub);
   TEST(test_is_overflow_pos);
   TEST(test_is_err);
+  TEST(test_add_fractions_carry_over);
+  TEST(test_add_with_second_value_negative);
+  TEST(test_add_with_both_values_positive);
+  TEST(test_sub_with_two_positive_values);
 
   //Our tests
   TEST(test_create_from_hex_special_cases);
