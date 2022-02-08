@@ -30,12 +30,15 @@ void test_add(TestObjs *objs);
 void test_sub(TestObjs *objs);
 void test_is_overflow_pos(TestObjs *objs);
 void test_is_err(TestObjs *objs);
+
+// TODO: add more test functions PUT OUR TESTS HERE \/
+void test_create_from_hex_special_cases(TestObjs *objs);
+
 void test_add_fractions_carry_over(TestObjs *objs);
 void test_add_with_second_value_negative(TestObjs *objs);
 void test_add_with_both_values_positive(TestObjs *objs);
 void test_sub_with_two_positive_values(TestObjs *objs);
-// TODO: add more test functions
-void test_create_from_hex_special_cases(TestObjs *objs);
+void testy(TestObjs *objs);
 
 int main(int argc, char **argv) {
   // if a testname was specified on the command line, only that
@@ -62,6 +65,7 @@ int main(int argc, char **argv) {
 
   //Our tests
   TEST(test_create_from_hex_special_cases);
+  TEST(testy);
 
   // IMPORTANT: if you add additional test functions (which you should!),
   // make sure they are included here.  E.g., if you add a test function
@@ -205,70 +209,6 @@ void test_add(TestObjs *objs) {
   ASSERT(0x5be47e8ea0538c50UL == fixedpoint_frac_part(sum));
 }
 
-void test_add_fractions_carry_over(TestObjs *objs) {
-  (void) objs;
-
-  Fixedpoint lhs, rhs, sum;
-
-  lhs = fixedpoint_create_from_hex("4.4000000000000000");
-  rhs = fixedpoint_create_from_hex("2.4000000000000000");
-  sum = fixedpoint_add(lhs, rhs);
-  ASSERT(6 == fixedpoint_whole_part(sum));
-  ASSERT(0x8000000000000000 == fixedpoint_frac_part(sum));
-}
-
-void test_add_with_second_value_negative(TestObjs *objs) {
-  (void) objs;
-
-  Fixedpoint lhs, rhs, sum;
-
-  lhs = fixedpoint_create_from_hex("d7da66a1cd2297b.a05");
-  rhs = fixedpoint_create_from_hex("-e2fed30121a5.72e");
-  sum = fixedpoint_add(lhs, rhs);
-  ASSERT(!fixedpoint_is_neg(sum));
-  ASSERT(0xd7cc36b49d107d6UL == fixedpoint_whole_part(sum));
-  ASSERT(0x2d7UL == fixedpoint_frac_part(sum));
-}
-
-void test_add_with_both_values_positive(TestObjs *objs) {
-  (void) objs;
-
-  Fixedpoint lhs, rhs, sum;
-
-  lhs = fixedpoint_create_from_hex("52bfd5fd96.09");
-  rhs = fixedpoint_create_from_hex("db7f4ad5a5f.1cc2c7c");
-  sum = fixedpoint_add(lhs, rhs);
-  ASSERT(!fixedpoint_is_neg(sum));
-  ASSERT(0xe0ab48357f5UL == fixedpoint_whole_part(sum));
-  ASSERT(0x25c2c7cUL == fixedpoint_frac_part(sum));
-}
-
-void test_sub(TestObjs *objs) {
-  (void) objs;
-
-  Fixedpoint lhs, rhs, diff;
-
-  lhs = fixedpoint_create_from_hex("-ccf35aa3a04a3b.b105");
-  rhs = fixedpoint_create_from_hex("f676e8.58");
-  diff = fixedpoint_sub(lhs, rhs);
-  ASSERT(fixedpoint_is_neg(diff));
-  ASSERT(0xccf35aa496c124UL == fixedpoint_whole_part(diff));
-  ASSERT(0x0905000000000000UL == fixedpoint_frac_part(diff));
-}
-
-void test_sub_with_two_positive_values(TestObjs *objs) {
-  (void) objs;
-
-  Fixedpoint lhs, rhs, diff;
-
-  lhs = fixedpoint_create_from_hex("8e4af294.086b81ac");
-  rhs = fixedpoint_create_from_hex("82603e7c88.878367");
-  diff = fixedpoint_sub(lhs, rhs);
-  ASSERT(fixedpoint_is_neg(diff));
-  ASSERT(0x82ee896f1cUL == fixedpoint_whole_part(diff));
-  ASSERT(0x8feee8ac0UL == fixedpoint_frac_part(diff));
-}
-
 void test_is_overflow_pos(TestObjs *objs) {
   Fixedpoint sum;
 
@@ -364,6 +304,84 @@ void test_create_from_hex_special_cases(TestObjs *objs) {
   ASSERT(fixedpoint_is_valid(val7));
   ASSERT(0xABCDEFUL == fixedpoint_whole_part(val7));
   ASSERT(0xABCDEF0000000000UL == fixedpoint_frac_part(val7));
+}
+
+
+void test_add_fractions_carry_over(TestObjs *objs) {
+  (void) objs;
+
+  Fixedpoint lhs, rhs, sum;
+
+  lhs = fixedpoint_create_from_hex("4.4000000000000000");
+  rhs = fixedpoint_create_from_hex("2.4000000000000000");
+  sum = fixedpoint_add(lhs, rhs);
+  ASSERT(6 == fixedpoint_whole_part(sum));
+  ASSERT(0x8000000000000000 == fixedpoint_frac_part(sum));
+}
+
+void test_add_with_second_value_negative(TestObjs *objs) {
+  (void) objs;
+
+  Fixedpoint lhs, rhs, sum;
+
+  lhs = fixedpoint_create_from_hex("d7da66a1cd2297b.a05");
+  rhs = fixedpoint_create_from_hex("-e2fed30121a5.72e");
+  sum = fixedpoint_add(lhs, rhs);
+  ASSERT(!fixedpoint_is_neg(sum));
+  ASSERT(0xd7cc36b49d107d6UL == fixedpoint_whole_part(sum));
+  ASSERT(0x2d7UL == fixedpoint_frac_part(sum));
+}
+
+void test_add_with_both_values_positive(TestObjs *objs) {
+  (void) objs;
+
+  Fixedpoint lhs, rhs, sum;
+
+  lhs = fixedpoint_create_from_hex("52bfd5fd96.09");
+  rhs = fixedpoint_create_from_hex("db7f4ad5a5f.1cc2c7c");
+  sum = fixedpoint_add(lhs, rhs);
+  ASSERT(!fixedpoint_is_neg(sum));
+  ASSERT(0xe0ab48357f5UL == fixedpoint_whole_part(sum));
+  ASSERT(0x25c2c7cUL == fixedpoint_frac_part(sum));
+}
+
+void test_sub(TestObjs *objs) {
+  (void) objs;
+
+  Fixedpoint lhs, rhs, diff;
+
+  lhs = fixedpoint_create_from_hex("-ccf35aa3a04a3b.b105");
+  rhs = fixedpoint_create_from_hex("f676e8.58");
+  diff = fixedpoint_sub(lhs, rhs);
+  ASSERT(fixedpoint_is_neg(diff));
+  ASSERT(0xccf35aa496c124UL == fixedpoint_whole_part(diff));
+  ASSERT(0x0905000000000000UL == fixedpoint_frac_part(diff));
+}
+
+void test_sub_with_two_positive_values(TestObjs *objs) {
+  (void) objs;
+
+  Fixedpoint lhs, rhs, diff;
+
+  lhs = fixedpoint_create_from_hex("8e4af294.086b81ac");
+  rhs = fixedpoint_create_from_hex("82603e7c88.878367");
+  diff = fixedpoint_sub(lhs, rhs);
+  ASSERT(fixedpoint_is_neg(diff));
+  ASSERT(0x82ee896f1cUL == fixedpoint_whole_part(diff));
+  ASSERT(0x8feee8ac0UL == fixedpoint_frac_part(diff));
+}
+
+void testy(TestObjs *objs) {
+  (void) objs;
+
+  Fixedpoint lhs, rhs, sum;
+
+  lhs = fixedpoint_create_from_hex("-56b5c50b4020f6.a24170d4f2f6790");
+  rhs = fixedpoint_create_from_hex("2e1f7463f.2442a194ef3779");
+  sum = fixedpoint_add(lhs, rhs);
+  ASSERT(fixedpoint_is_neg(sum));
+  ASSERT(0x56b5c22948dab7UL == fixedpoint_whole_part(sum));
+  ASSERT(0x7dfecf4003bf000UL == fixedpoint_frac_part(sum));
 }
 
 /* void test_add_causes_overflow(TestObjs *objs) {

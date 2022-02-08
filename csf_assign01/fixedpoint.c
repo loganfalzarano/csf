@@ -285,7 +285,7 @@ char *fixedpoint_format_as_hex(Fixedpoint val) {
 
 
   // TODO: implement
-  char *s = malloc(34);
+  char *s = malloc(35);
 
   //TODO: Deal with issue of trailing zeros
   int is_decimal = 0;
