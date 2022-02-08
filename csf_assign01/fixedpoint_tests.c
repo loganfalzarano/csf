@@ -634,9 +634,9 @@ void test_fixedpoint_halve(TestObjs *objs) {
   ASSERT(res.frac_part == 0x8000000000000000UL);
 
   Fixedpoint res1 = fixedpoint_create_from_hex("1.0");
-  printf("HERE: %xl .. %xl\n", res1.whole_part, res1.frac_part);
+  printf("\n\nHERE: %lu . %lu\n", res1.whole_part, res1.frac_part);
   res1  = fixedpoint_halve(res);
-  printf("HERE: %xl .. %xl\n", res1.whole_part, res1.frac_part);
+  printf("HERE: %lu . %lu\n\ns", res1.whole_part, res1.frac_part);
   ASSERT(res1.whole_part == 0);
 
   ASSERT(res1.frac_part == 0x8000000000000000UL);

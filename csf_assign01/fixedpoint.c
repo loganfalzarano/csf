@@ -138,17 +138,30 @@ Fixedpoint fixedpoint_negate(Fixedpoint val) {
 Fixedpoint fixedpoint_halve(Fixedpoint val) {
   Fixedpoint res = val;
 
+  float decimal = (((float)val.whole_part / (float)2.0) - (val.whole_part / 2));
+  while (decimal != (int) decimal) {
+    decimal *= 10; // this is now the decimal value after halving, represnted as an int
+  }
+  uint64_t intdecimal = (uint64_t) decimal;
+  uint64_t before_padding = (uint64_t)strtoul(intdecimal, NULL, 16);
+  //add leading zeros
+  uint64_t remainder = before_padding << (64 - 4 * strlen(res.frac_part));
+
+
   if (!fixedpoint_is_zero(val)) {
     res.whole_part = val.whole_part>>1;
-    printf("whole part is: %d", res.whole_part);
-    if (res.whole_part == 0) {
-      printf("got here");
-      res.frac_part += 0x8000000000000000UL;
-    }
+    //printf("whole part is: %d", res.whole_part);
+    // if (res.whole_part == 0) {
+    //   //printf("got here");
+    //   res.frac_part += 0x8000000000000000UL;
+    // }
     res.frac_part = val.frac_part>>1;
 
     if (val.whole_part % 2 != 0) {
-      res.frac_part = res.frac_part | 1UL<<63;
+      printf("got here");
+      //res.frac_part = res.frac_part | 1UL<<63;
+      //res.frac_part += 0x8000000000000000UL;
+      res.frac_part += remainder;
     }
     if (val.frac_part % 2 != 0) {
       res.tag = res.tag + 5;
