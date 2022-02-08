@@ -140,6 +140,11 @@ Fixedpoint fixedpoint_halve(Fixedpoint val) {
 
   if (!fixedpoint_is_zero(val)) {
     res.whole_part = val.whole_part>>1;
+    printf("whole part is: %d", res.whole_part);
+    if (res.whole_part == 0) {
+      printf("got here");
+      res.frac_part += 0x8000000000000000UL;
+    }
     res.frac_part = val.frac_part>>1;
 
     if (val.whole_part % 2 != 0) {
