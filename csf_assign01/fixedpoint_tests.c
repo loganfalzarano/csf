@@ -197,8 +197,8 @@ void test_add(TestObjs *objs) {
 
   Fixedpoint lhs, rhs, sum;
 
-  lhs = fixedpoint_create_from_hex("-c7252a193ae07.7a51de9ea0538c5");
-  rhs = fixedpoint_create_from_hex("d09079.1e6d601");
+  lhs = fixedpoint_create_from_hex("-c7252a193ae07.7a51de9ea0538c50");
+  rhs = fixedpoint_create_from_hex("d09079.1e6d601000000000");
   sum = fixedpoint_add(lhs, rhs);
   ASSERT(fixedpoint_is_neg(sum));
   ASSERT(0xc7252a0c31d8eUL == fixedpoint_whole_part(sum));
@@ -222,8 +222,8 @@ void test_add_with_second_value_negative(TestObjs *objs) {
 
   Fixedpoint lhs, rhs, sum;
 
-  lhs = fixedpoint_create_from_hex("d7da66a1cd2297b.a05");
-  rhs = fixedpoint_create_from_hex("-e2fed30121a5.72e");
+  lhs = fixedpoint_create_from_hex("d7da66a1cd2297b.a050000000000000");
+  rhs = fixedpoint_create_from_hex("-e2fed30121a5.72e0000000000000");
   sum = fixedpoint_add(lhs, rhs);
   ASSERT(!fixedpoint_is_neg(sum));
   ASSERT(0xd7cc36b49d107d6UL == fixedpoint_whole_part(sum));
@@ -235,8 +235,8 @@ void test_add_with_both_values_positive(TestObjs *objs) {
 
   Fixedpoint lhs, rhs, sum;
 
-  lhs = fixedpoint_create_from_hex("52bfd5fd96.09");
-  rhs = fixedpoint_create_from_hex("db7f4ad5a5f.1cc2c7c");
+  lhs = fixedpoint_create_from_hex("52bfd5fd96.0900000000000000");
+  rhs = fixedpoint_create_from_hex("db7f4ad5a5f.1cc2c7c000000000");
   sum = fixedpoint_add(lhs, rhs);
   ASSERT(!fixedpoint_is_neg(sum));
   ASSERT(0xe0ab48357f5UL == fixedpoint_whole_part(sum));
@@ -248,8 +248,8 @@ void test_sub(TestObjs *objs) {
 
   Fixedpoint lhs, rhs, diff;
 
-  lhs = fixedpoint_create_from_hex("-ccf35aa3a04a3b.b105");
-  rhs = fixedpoint_create_from_hex("f676e8.58");
+  lhs = fixedpoint_create_from_hex("-ccf35aa3a04a3b.b105000000000000");
+  rhs = fixedpoint_create_from_hex("f676e8.5800000000000000");
   diff = fixedpoint_sub(lhs, rhs);
   ASSERT(fixedpoint_is_neg(diff));
   ASSERT(0xccf35aa496c124UL == fixedpoint_whole_part(diff));
@@ -261,8 +261,8 @@ void test_sub_with_two_positive_values(TestObjs *objs) {
 
   Fixedpoint lhs, rhs, diff;
 
-  lhs = fixedpoint_create_from_hex("8e4af294.086b81ac");
-  rhs = fixedpoint_create_from_hex("82603e7c88.878367");
+  lhs = fixedpoint_create_from_hex("8e4af294.086b81ac00000000");
+  rhs = fixedpoint_create_from_hex("82603e7c88.8783670000000000");
   diff = fixedpoint_sub(lhs, rhs);
   ASSERT(fixedpoint_is_neg(diff));
   ASSERT(0x82ee896f1cUL == fixedpoint_whole_part(diff));
