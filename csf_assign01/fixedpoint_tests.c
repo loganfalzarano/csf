@@ -210,11 +210,12 @@ void test_add_fractions_carry_over(TestObjs *objs) {
 
   Fixedpoint lhs, rhs, sum;
 
-  lhs = fixedpoint_create_from_hex("0.4000000000000000");
-  rhs = fixedpoint_create_from_hex("0.7000000000000000");
+  lhs = fixedpoint_create_from_hex("0.f000000000000000");
+  rhs = fixedpoint_create_from_hex("0.e000000000000000");
   sum = fixedpoint_add(lhs, rhs);
   ASSERT(1 == fixedpoint_whole_part(sum));
-  ASSERT(0x100000000000000UL == fixedpoint_frac_part(sum));
+  printf("\n\n%d . %d\n\n", (int)fixedpoint_whole_part(sum), (int)fixedpoint_frac_part(sum));
+  ASSERT(0xD00000000000000UL == fixedpoint_frac_part(sum));
 }
 
 void test_add_with_second_value_negative(TestObjs *objs) {
