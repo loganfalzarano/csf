@@ -136,7 +136,7 @@ Fixedpoint fixedpoint_negate(Fixedpoint val) {
 }
 
 Fixedpoint fixedpoint_halve(Fixedpoint val) {
-  Fixedpoint res = val;
+  /* Fixedpoint res = val;
 
   float decimal = (((float)val.whole_part / (float)2.0) - (val.whole_part / 2));
   while (decimal != (int) decimal) {
@@ -168,6 +168,22 @@ Fixedpoint fixedpoint_halve(Fixedpoint val) {
     }
   }
   return res;
+  */
+  //check if overflow happens
+  if ((val.frac_part & 1UL) == 1UL) {
+    val.tag += 5;
+    return val;
+  }
+  if ((val.whole_part & 1UL) == 1UL) {
+    val.frac_part = val.frac_part >> 1;
+    val.frac_part = val.frac_part | (1UL << 63);
+    val.whole_part = val.whole_part >> 1;
+  } else {
+    val.frac_part = val.frac_part >> 1;
+    val.whole_part = val.whole_part >> 1;
+  }
+  printf("whole part %x, frac part%x", val.whole_part, val.frac_part);
+  return val;
 }
 
 Fixedpoint fixedpoint_double(Fixedpoint val) {
@@ -186,7 +202,7 @@ Fixedpoint fixedpoint_double(Fixedpoint val) {
     }
     res.whole_part = val.whole_part * 2 + carry;
   }
-  return res;
+  return res; 
 }
 
 int fixedpoint_compare(Fixedpoint left, Fixedpoint right) {
