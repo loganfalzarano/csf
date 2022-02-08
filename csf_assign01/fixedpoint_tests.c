@@ -30,6 +30,10 @@ void test_add(TestObjs *objs);
 void test_sub(TestObjs *objs);
 void test_is_overflow_pos(TestObjs *objs);
 void test_is_err(TestObjs *objs);
+void test_add_fractions_carry_over(TestObjs *objs);
+void test_add_with_second_value_negative(TestObjs *objs);
+void test_add_with_both_values_positive(TestObjs *objs);
+void test_sub_with_two_positive_values(TestObjs *objs);
 // TODO: add more test functions
 void test_create_from_hex_special_cases(TestObjs *objs);
 
