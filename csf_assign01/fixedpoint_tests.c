@@ -210,11 +210,11 @@ void test_add_fractions_carry_over(TestObjs *objs) {
 
   Fixedpoint lhs, rhs, sum;
 
-  lhs = fixedpoint_create2(2, 9);
-  rhs = fixedpoint_create2(2, 9);
+  lhs = fixedpoint_create_from_hex("4.4000000000000000");
+  rhs = fixedpoint_create_from_hex("2.4000000000000000");
   sum = fixedpoint_add(lhs, rhs);
-  ASSERT(5 == fixedpoint_whole_part(sum));
-  ASSERT(8 == fixedpoint_frac_part(sum));
+  ASSERT(6 == fixedpoint_whole_part(sum));
+  ASSERT(0x8000000000000000 == fixedpoint_frac_part(sum));
 }
 
 void test_add_with_second_value_negative(TestObjs *objs) {

@@ -109,66 +109,34 @@ uint64_t fixedpoint_frac_part(Fixedpoint val) {
 
 Fixedpoint fixedpoint_add(Fixedpoint left, Fixedpoint right) {
   Fixedpoint res = left;
-  //right.whole_part = (uint16_t)right.whole_part;
-
-  printf("\n\nLeft tag is: %d, right tag is: %d", left.tag, right.tag);
-  printf("\nLeft value is: %d.%d, right value is: %d.%d\n", (int)left.whole_part, (int)left.frac_part, (int)right.whole_part, (int)right.frac_part);
   if (left.tag == right.tag) {
     res.whole_part = left.whole_part + right.whole_part;
     res.frac_part = left.frac_part + right.frac_part;
-
-    if (res.frac_part < left.frac_part || res.frac_part < right.frac_part) {
+    if ((res.frac_part < left.frac_part) || (res.frac_part < right.frac_part)) {
       res.whole_part++;
     }
-    if (res.whole_part < left.whole_part || res.whole_part < right.whole_part) {
+    if ((res.whole_part < left.whole_part) || (res.whole_part < right.whole_part)) {
       res.tag = left.tag + 3; //positive/negative overflow
     }
     return res;
-  } else if (fixedpoint_is_neg(left) && !fixedpoint_is_neg(right)) {
-    printf("went here\n");
-    res = fixedpoint_sub(right, fixedpoint_negate(left));
-  } else if (!fixedpoint_is_neg(left) && fixedpoint_is_neg(right)) {
-    res = fixedpoint_sub(left, fixedpoint_negate(right));
+  } else {
+    //ensure greater magnitude on the left
+    if (right.whole_part > left.whole_part || (left.whole_part == right.whole_part && right.whole_part > left.whole_part)) {
+      res = right;
+      right = left;
+      left = res;
+    }
+    res.frac_part = left.frac_part - right.frac_part;
+    res.whole_part = left.whole_part - right.whole_part;
+    if (right.frac_part > left.frac_part) {
+      res.whole_part--;
+    }
+    return res;
   }
-  printf("Tag before the return is: %d\n", res.tag);
-  printf("Value before return is: %d.%d\n\n", (int)res.whole_part, (int)res.frac_part);
-  
-  return res;
 }
 
 Fixedpoint fixedpoint_sub(Fixedpoint left, Fixedpoint right) {
-  printf("\n\nLeft tag is: %d, right tag is: %d\n", left.tag, right.tag);
-  printf("Left value is: %d, right value is: %d\n", (int)left.whole_part, (int)right.whole_part);
-  Fixedpoint res = left;
-  if (left.tag == right.tag) {
-    if (left.whole_part > right.whole_part) {
-      res.whole_part = left.whole_part - right.whole_part;
-      if (left.frac_part > right.frac_part) {
-        res.frac_part = left.frac_part - right.frac_part;
-      } else {
-        res.frac_part = right.frac_part - left.frac_part;
-      }
-    } else { // left < right or right == left
-    printf("went here x2\n");
-      res.whole_part = right.whole_part - left.whole_part;
-      if (left.frac_part > right.frac_part) {
-        res.frac_part = left.frac_part - right.frac_part;
-      } else {
-        res.frac_part = right.frac_part - left.frac_part;
-      }
-      res.tag = right.tag + 1;
-    }
-  }
-  else if (left.tag == 2 && right.tag == 1) {
-    res = fixedpoint_negate(fixedpoint_add(fixedpoint_negate(left), right));
-  }
-  else if ((left.tag == 1 && right.tag == 2)) {
-    res = fixedpoint_add(left, fixedpoint_negate(right));
-  }
-  else {
-    return res; //Underflow??
-  }
-  return res;
+  return fixedpoint_add(left, fixedpoint_negate(right));
 }
 
 Fixedpoint fixedpoint_negate(Fixedpoint val) {
