@@ -5,9 +5,6 @@
 #include <assert.h>
 #include "fixedpoint.h"
 
-// You can remove this once all of the functions are fully implemented
-//static Fixedpoint DUMMY;
-
 Fixedpoint fixedpoint_create(uint64_t whole) {
   //this can only create non-negative values
   Fixedpoint res;
@@ -61,18 +58,17 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
   //check that all characters are valid hex characters
   if (strlen(first_part) > 16 || strlen(second_part) > 16) {
     res.tag = 3;
-    //printf("Error, too many characters");
   }
   for (size_t i = 0; i < strlen(first_part); i++) {
     if (!((first_part[i] >= 'a' && first_part[i] <= 'f') || (first_part[i] >= 'A' && first_part[i] <= 'F') || (first_part[i] >= '0' && first_part[i] <= '9'))) {
       res.tag = 3;
-      return res; //TODO: return res or retun NULL
+      return res;
     }
   }
   for (size_t j = 0; j < strlen(second_part); j++) {
     if (!((second_part[j] >= 'a' && second_part[j] <= 'f') || (first_part[j] >= 'A' && first_part[j] <= 'F') || (second_part[j] >= '0' && second_part[j] <= '9'))) {
       res.tag = 3;
-      return res; //TODO: return res or retun NULL
+      return res;
     }
   }
 
