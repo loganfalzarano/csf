@@ -27,22 +27,17 @@ Fixedpoint fixedpoint_create2(uint64_t whole, uint64_t frac) {
 }
 
 Fixedpoint fixedpoint_create_from_hex(const char *hex) {
-  // TODO: implement
-
-  // TODO: Consider special case for
 
   //initialize object to be returned and reassign hex
   Fixedpoint res;
 
   res.tag = 1; //Assume it's valid unless we see otherwise
 
-  //const char * hex = "0.d";
 
   char first_part[17];
   size_t hex_index = 0;
   size_t index = 0;
   while (index < strlen(hex) && hex[hex_index] != '.' && index <= 16) {
-    //printf("char is: %c, index is: %d\n", hex[hex_index], index);
     if (hex[hex_index] == '-') { // Second statement ensures we don't continue if there is a dash in the middle of the number
       res.tag = 2;
       hex_index++;
@@ -57,15 +52,11 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
   hex_index++;
   index = 0;
   while (hex_index < strlen(hex) && index <= 16) {
-    //printf("second part: char is: %c, index is: %d\n", hex[hex_index], index);
     second_part[index] = hex[hex_index];
     index++;
     hex_index++;
   }
   second_part[index] = 0;
-
-  //printf("FIRSRT PART IS: |%s|", first_part);
-  //printf("SECOND PART IS: |%s|", second_part);
   
   //check that all characters are valid hex characters
   if (strlen(first_part) > 16 || strlen(second_part) > 16) {
@@ -75,13 +66,11 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
   for (size_t i = 0; i < strlen(first_part); i++) {
     if (!((first_part[i] >= 'a' && first_part[i] <= 'f') || (first_part[i] >= 'A' && first_part[i] <= 'F') || (first_part[i] >= '0' && first_part[i] <= '9'))) {
       res.tag = 3;
-      //printf("Found error value\n\n");
       return res; //TODO: return res or retun NULL
     }
   }
   for (size_t j = 0; j < strlen(second_part); j++) {
     if (!((second_part[j] >= 'a' && second_part[j] <= 'f') || (first_part[j] >= 'A' && first_part[j] <= 'F') || (second_part[j] >= '0' && second_part[j] <= '9'))) {
-      //printf("Found error value\n\n");
       res.tag = 3;
       return res; //TODO: return res or retun NULL
     }
@@ -94,8 +83,6 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
   res.frac_part = before_padding << (64 - 4 * strlen(second_part));
   if (res.whole_part == 0 && res.frac_part == 0) res.tag = 1;
 
-  //printf("\n\nWhole part is: %ld\nFrac part is: %ld\n", res.whole_part, res.frac_part);
-  //printf("tag is: %d\n\n\n", res.tag);
   return res;
 }
 
@@ -154,19 +141,14 @@ Fixedpoint fixedpoint_negate(Fixedpoint val) {
 
 Fixedpoint fixedpoint_halve(Fixedpoint val) {
   Fixedpoint res = val;
-  //uint64_t carry = 0;
 
   if (!fixedpoint_is_zero(val)) {
-    //res.whole_part = val.whole_part / 2;
     res.whole_part = val.whole_part>>1;
     res.frac_part = val.frac_part>>1;
 
     if (val.whole_part % 2 != 0) {
-      //carry = 1;
       res.frac_part = res.frac_part | 1UL<<63;
     }
-
-    //res.frac_part =  carry + val.frac_part / 2;
     if (val.frac_part % 2 != 0) {
       res.tag = res.tag + 5;
     }
@@ -204,37 +186,28 @@ int fixedpoint_compare(Fixedpoint left, Fixedpoint right) {
     return -1; // left is negative & right is positive
   } else { // left and right have same sign
     if (left.whole_part > right.whole_part) {
-      if (fixedpoint_is_neg(left)) {
-        // both are negative & left is more negative than right
-        return -1;
-      } else {
-        // both are positive & left is less than right
+      if (fixedpoint_is_neg(left)) { // both are negative & left is more negative than right
+        return -1; 
+      } else { // both are positive & left is less than right
         return 1;
       }
     } else if (left.whole_part < right.whole_part) {
-      if (fixedpoint_is_neg(left)) {
-        // both are negative & left is less negative than right
+      if (fixedpoint_is_neg(left)) { // both are negative & left is less negative than right
         return 1;
-      } else {
-        // both are positive & left is greater than right
+      } else { // both are positive & left is greater than right
         return -1;
       }
-    } else {
-      // whole parts are equal
+    } else { // whole parts are equal
       if (left.frac_part > right.frac_part) {
-        if (fixedpoint_is_neg(left)) {
-          // both are negative & left is more negative than right
+        if (fixedpoint_is_neg(left)) { // both are negative & left is more negative than right
           return -1;
-        } else {
-          // both are positive & left is less than right
+        } else { // both are positive & left is less than right
           return 1;
         }
       } else if (left.frac_part < right.frac_part) {
-        if (fixedpoint_is_neg(left)) {
-          // both are negative & left is less negative than right
+        if (fixedpoint_is_neg(left)) { // both are negative & left is less negative than right
           return 1;
-        } else {
-          // both are positive & left is greater than right
+        } else { // both are positive & left is greater than right
           return -1;
         }
       } else {
@@ -277,17 +250,8 @@ int fixedpoint_is_valid(Fixedpoint val) {
 }
 
 char *fixedpoint_format_as_hex(Fixedpoint val) {
-  /* // TODO: implement
-  assert(0);
-  char *s = malloc(20);
-  strcpy(s, "<invalid>");
-  return s; */
-
-
-  // TODO: implement
   char *s = malloc(34);
 
-  //TODO: Deal with issue of trailing zeros
   int is_decimal = 0;
   if (fixedpoint_is_zero(val)) {
     strcpy(s, "0");
@@ -310,10 +274,5 @@ char *fixedpoint_format_as_hex(Fixedpoint val) {
       }
     }
   }
-  
-  
-
-  //printf("\n\n The string is: %s\n\n", s);
-  
   return s;
 }
