@@ -30,9 +30,15 @@ void test_add(TestObjs *objs);
 void test_sub(TestObjs *objs);
 void test_is_overflow_pos(TestObjs *objs);
 void test_is_err(TestObjs *objs);
+//Our tests
 void test_add_fractions_carry_over(TestObjs *objs);
 void test_add_with_second_value_negative(TestObjs *objs);
 void test_add_with_both_values_positive(TestObjs *objs);
+void test_add_with_both_values_negative(TestObjs *objs);
+
+void test_add_with_opposite_signs_causes_carry(TestObjs *objs);
+void test_add_frac_part_causes_overflow_in_whole_part(TestObjs *objs);
+
 void test_sub_with_two_positive_values(TestObjs *objs);
 void test_fixedpoint_create(TestObjs *objs);
 void test_fixedpoint_create2(TestObjs *objs);
@@ -41,6 +47,10 @@ void test_fixedpoint_halve(TestObjs *objs);
 void test_fixedpoint_halve_negative_value(TestObjs *objs);
 void test_fixedpoint_double(TestObjs *objs);
 void test_fixedpoint_double_negative_value(TestObjs *objs);
+
+void test_fixedpoint_format_as_hex_negatives(TestObjs *objs);
+void test_format_as_hex_edges_cases(TestObjs *objs);
+
 
 // TODO: add more test functions
 void test_create_from_hex_special_cases(TestObjs *objs);
@@ -63,10 +73,14 @@ int main(int argc, char **argv) {
   TEST(test_sub);
   TEST(test_is_overflow_pos);
   TEST(test_is_err);
+
   TEST(test_add_fractions_carry_over);
   TEST(test_add_with_second_value_negative);
   TEST(test_add_with_both_values_positive);
+  TEST(test_add_with_opposite_signs_causes_carry);
+  TEST(test_add_frac_part_causes_overflow_in_whole_part);
   TEST(test_sub_with_two_positive_values);
+  TEST(test_add_with_both_values_negative);
   TEST(test_fixedpoint_create);
   TEST(test_fixedpoint_create2);
   TEST(test_fixedpoint_negate);
@@ -74,6 +88,9 @@ int main(int argc, char **argv) {
   TEST(test_fixedpoint_halve_negative_value);
   TEST(test_fixedpoint_double);
   TEST(test_fixedpoint_double_negative_value);
+
+  TEST(test_fixedpoint_format_as_hex_negatives);
+  TEST(test_format_as_hex_edges_cases);
 
   //Our tests
   TEST(test_create_from_hex_special_cases);
@@ -220,6 +237,8 @@ void test_add(TestObjs *objs) {
   ASSERT(0x5be47e8ea0538c50UL == fixedpoint_frac_part(sum));
 }
 
+
+//OUR TESTS
 void test_add_fractions_carry_over(TestObjs *objs) {
   (void) objs;
 
@@ -256,6 +275,43 @@ void test_add_with_both_values_positive(TestObjs *objs) {
   ASSERT(!fixedpoint_is_neg(sum));
   ASSERT(0x12540bed251UL == fixedpoint_whole_part(sum));
   ASSERT(0x194d05542a000000UL == fixedpoint_frac_part(sum));
+}
+
+void test_add_with_both_values_negative(TestObjs *objs) {
+  (void) objs;
+
+  Fixedpoint lhs, rhs, sum;
+
+  lhs = fixedpoint_create_from_hex("-b764aa2d4.56a0000000000000");
+  rhs = fixedpoint_create_from_hex("-61a4f.caf3731700000000");
+  sum = fixedpoint_add(lhs, rhs);
+  ASSERT(fixedpoint_is_neg(sum));
+  ASSERT(0xb7650bd24UL == fixedpoint_whole_part(sum));
+  ASSERT(0x2193731700000000UL == fixedpoint_frac_part(sum));
+}
+
+void test_add_frac_part_causes_overflow_in_whole_part(TestObjs *objs) {
+  (void) objs;
+
+  Fixedpoint lhs, rhs, sum;
+
+  lhs = fixedpoint_create_from_hex("FFFFFFFFFFFFFFFF.8000000000000000");
+  rhs = fixedpoint_create_from_hex("0.8000000000000000");
+  sum = fixedpoint_add(lhs, rhs);
+  ASSERT(fixedpoint_is_overflow_pos(sum));
+}
+
+void test_add_with_opposite_signs_causes_carry(TestObjs *objs) {
+  (void) objs;
+
+  Fixedpoint lhs, rhs, sum;
+
+  lhs = fixedpoint_create_from_hex("79b625c0.8a51a890d0000000");
+  rhs = fixedpoint_create_from_hex("-1e10.d000000000000000");
+  sum = fixedpoint_add(lhs, rhs);
+  ASSERT(!fixedpoint_is_neg(sum));
+  ASSERT(0x79b607afUL == fixedpoint_whole_part(sum));
+  ASSERT(0xba51a890d0000000UL == fixedpoint_frac_part(sum));
 }
 
 void test_sub(TestObjs *objs) {
@@ -396,6 +452,18 @@ void test_create_from_hex_special_cases(TestObjs *objs) {
   ASSERT(fixedpoint_is_valid(val7));
   ASSERT(0xABCDEFUL == fixedpoint_whole_part(val7));
   ASSERT(0xABCDEF0000000000UL == fixedpoint_frac_part(val7));
+
+  //Leading and trailing zeros in fractional part
+  Fixedpoint val8 = fixedpoint_create_from_hex(".0990");
+  ASSERT(fixedpoint_is_valid(val8));
+  ASSERT(0x0UL == fixedpoint_whole_part(val8));
+  ASSERT(0x0990000000000000UL == fixedpoint_frac_part(val8));
+
+  //Leading and trailing zeros in whole part
+  Fixedpoint val9 = fixedpoint_create_from_hex("09234.");
+  ASSERT(fixedpoint_is_valid(val9));
+  ASSERT(0x9234UL == fixedpoint_whole_part(val9));
+  ASSERT(0x0UL == fixedpoint_frac_part(val9));
 }
 
 void test_fixedpoint_negate(TestObjs *objs) {
@@ -454,34 +522,55 @@ void test_fixedpoint_double_negative_value(TestObjs *objs) {
   ASSERT(res.frac_part == 0x1000000000000000UL);
 }
 
-void test_fixedpoint_double_negative_value(TestObjs *objs) {
+void test_fixedpoint_format_as_hex_negatives(TestObjs *objs) {
+  
   (void) objs;
+  
+  char *s;
+  Fixedpoint val1 = fixedpoint_create2(0x0UL, 0x8000000000000000UL);
+  val1.tag = 2;
+  s = fixedpoint_format_as_hex(val1);
+  ASSERT(0 == strcmp(s, "-0.8"));
+  free(s);
 
-  Fixedpoint res;
+  Fixedpoint val2 = fixedpoint_create2(0x1UL, 0x8000000000000000UL);
+  val2.tag = 2;
+  s = fixedpoint_format_as_hex(val2);
+  ASSERT(0 == strcmp(s, "-1.8"));
+  free(s);
 
-  res = fixedpoint_create_from_hex("-8aba.2000000000000000");
-  res  = fixedpoint_halve(res);
-  ASSERT(fixedpoint_is_neg(res));
-  ASSERT(res.whole_part == 17757);
-  ASSERT(res.frac_part == 0x1000000000000000UL);
+  //integer value does not display fractional part
+  Fixedpoint val3 = fixedpoint_create2(0x1234UL, 0x0000000000000000UL);
+  val3.tag = 2;
+  s = fixedpoint_format_as_hex(val3);
+  ASSERT(0 == strcmp(s, "-1234"));
+  free(s);
+
+  //all hex characters used
+  Fixedpoint val4 = fixedpoint_create2(0x1UL, 0xabcdef0123456789UL);
+  val4.tag = 2;
+  s = fixedpoint_format_as_hex(val4);
+  ASSERT(0 == strcmp(s, "-1.abcdef0123456789"));
+  free(s);
+}
+
+void test_format_as_hex_edges_cases(TestObjs *objs) {
+
+  (void) objs;
+  
+  char *s;
+  Fixedpoint val1 = fixedpoint_create2(0x0UL, 0x0UL);
+  val1.tag = 1;
+  s = fixedpoint_format_as_hex(val1);
+  ASSERT(0 == strcmp(s, "0"));
+  free(s);
+
+  //if the value is zero no negative sign is included
+  Fixedpoint val2 = fixedpoint_create2(0x0UL, 0x0UL);
+  val2.tag = 2;
+  s = fixedpoint_format_as_hex(val2);
+  ASSERT(0 == strcmp(s, "0"));
+  free(s);
 }
 
 
-/* void test_add_causes_overflow(TestObjs *objs) {
-  (void) objs;
-
-  Fixedpoint lhs, rhs, sum;
-
-  lhs = fixedpoint_create_from_hex("-c7252a193ae07.7a51de9ea0538c5");
-  rhs = fixedpoint_create_from_hex("d09079.1e6d601");
-  sum = fixedpoint_add(lhs, rhs);
-  ASSERT(fixedpoint_is_neg(sum));
-  ASSERT(0xc7252a0c31d8eUL == fixedpoint_whole_part(sum));
-  ASSERT(0x5be47e8ea0538c50UL == fixedpoint_frac_part(sum));
-} */
-
-
-
-
-//Note from Logan:
-//Test ".0990", ".", "09234."
