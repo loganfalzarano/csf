@@ -55,6 +55,19 @@ Fixedpoint fixedpoint_create2(uint64_t whole, uint64_t frac);
 //   fixedpoint_is_err returns true
 Fixedpoint fixedpoint_create_from_hex(const char *hex);
 
+
+// Check whether characters in a string are valid hex characters.
+// i.e. a-f, A-F, 0-9. Also checks that string is valid length (<=16)
+//
+// Parameters:
+//   first_part - string of characters read from the hex string
+//   second_part - string of characters read from the hex string
+//
+// Returns:
+//   if both strings are valid then 1 (true);
+//   else 0 (false)
+int check_valid_hex_characters(const char *first_part, const char *second_part);
+
 // Get the whole part of the given Fixedpoint value.
 //
 // Parameters:

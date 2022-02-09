@@ -7,31 +7,21 @@
 
 Fixedpoint fixedpoint_create(uint64_t whole) {
   //this can only create non-negative values
-  Fixedpoint res;
-  res.whole_part = whole;
-  res.frac_part = 0;
-  res.tag = 1;
+  Fixedpoint res = {.whole_part = whole, .frac_part = 0, .tag = 1};
   return res;
 }
 
 Fixedpoint fixedpoint_create2(uint64_t whole, uint64_t frac) {
   //this can only create non-negative values
-  Fixedpoint res;
-  res.whole_part = whole;
-  res.frac_part = frac;
-  res.tag = 1;
+  Fixedpoint res = {.whole_part = whole, .frac_part = frac, .tag = 1};
   return res;
 }
 
 Fixedpoint fixedpoint_create_from_hex(const char *hex) {
-
   //initialize object to be returned and reassign hex
-  Fixedpoint res;
+  Fixedpoint res = fixedpoint_create(0);
 
-  res.tag = 1; //Assume it's valid unless we see otherwise
-
-
-  char first_part[17];
+  char first_part[18] = "\0";
   size_t hex_index = 0;
   size_t index = 0;
   while (index < strlen(hex) && hex[hex_index] != '.' && index <= 16) {
@@ -45,7 +35,7 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
     hex_index++;
   }
   first_part[index] = 0;
-  char second_part[17];
+  char second_part[18] = "\0";
   hex_index++;
   index = 0;
   while (hex_index < strlen(hex) && index <= 16) {
@@ -54,32 +44,47 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
     hex_index++;
   }
   second_part[index] = 0;
-  
   //check that all characters are valid hex characters
-  if (strlen(first_part) > 16 || strlen(second_part) > 16) {
+  if (!check_valid_hex_characters(first_part, second_part)) {
     res.tag = 3;
+    return res;
+  }
+  //now we can read in the integers to the whole_part and frac_part
+  if (strlen(first_part) == 0) {
+    res.whole_part = 0;
+  } else {
+    res.whole_part = (uint64_t)strtoul(first_part, NULL, 16); //automatically returns 0 if string is emtpy
+  }
+  if (strlen(second_part) == 0) {
+    res.frac_part = 0;
+  } else {
+    uint64_t before_padding = (uint64_t)strtoul(second_part, NULL, 16);
+    //add leading zeros
+    res.frac_part = before_padding << (64 - 4 * strlen(second_part));
+  }
+  uint64_t before_padding = (uint64_t)strtoul(second_part, NULL, 16);
+  res.frac_part = before_padding << (64 - 4 * strlen(second_part));
+  if (res.whole_part == 0 && res.frac_part == 0) {
+    res.tag = 1;
+  }
+  return res;
+}
+
+int check_valid_hex_characters(const char *first_part, const char *second_part) {
+  if (strlen(first_part) > 16 || strlen(second_part) > 16) {
+    return 0;
   }
   for (size_t i = 0; i < strlen(first_part); i++) {
-    if (!((first_part[i] >= 'a' && first_part[i] <= 'f') || (first_part[i] >= 'A' && first_part[i] <= 'F') || (first_part[i] >= '0' && first_part[i] <= '9'))) {
-      res.tag = 3;
-      return res;
+    if (!((tolower(first_part[i]) >= 'a' && tolower(first_part[i]) <= 'f') || (first_part[i] >= '0' && first_part[i] <= '9'))) {
+      return 0;
     }
   }
   for (size_t j = 0; j < strlen(second_part); j++) {
-    if (!((second_part[j] >= 'a' && second_part[j] <= 'f') || (first_part[j] >= 'A' && first_part[j] <= 'F') || (second_part[j] >= '0' && second_part[j] <= '9'))) {
-      res.tag = 3;
-      return res;
+    if (!((tolower(second_part[j]) >= 'a' && tolower(second_part[j]) <= 'f') || (second_part[j] >= '0' && second_part[j] <= '9'))) {
+      return 0;
     }
   }
-
-  //now we can read in the integers to the whole_part and frac_part
-  res.whole_part = (uint64_t)strtoul(first_part, NULL, 16); //automatically returns 0 if string is emtpy
-  uint64_t before_padding = (uint64_t)strtoul(second_part, NULL, 16);
-  //add leading zeros
-  res.frac_part = before_padding << (64 - 4 * strlen(second_part));
-  if (res.whole_part == 0 && res.frac_part == 0) res.tag = 1;
-
-  return res;
+  return 1;
 }
 
 uint64_t fixedpoint_whole_part(Fixedpoint val) {
@@ -92,6 +97,7 @@ uint64_t fixedpoint_frac_part(Fixedpoint val) {
 
 Fixedpoint fixedpoint_add(Fixedpoint left, Fixedpoint right) {
   Fixedpoint res = left;
+  //if tags are the same just magnitude
   if (left.tag == right.tag) {
     res.whole_part = left.whole_part + right.whole_part;
     res.frac_part = left.frac_part + right.frac_part;
@@ -109,6 +115,7 @@ Fixedpoint fixedpoint_add(Fixedpoint left, Fixedpoint right) {
       right = left;
       left = res;
     }
+    //do subtraction
     res.frac_part = left.frac_part - right.frac_part;
     res.whole_part = left.whole_part - right.whole_part;
     if (right.frac_part > left.frac_part) {
@@ -136,44 +143,12 @@ Fixedpoint fixedpoint_negate(Fixedpoint val) {
 }
 
 Fixedpoint fixedpoint_halve(Fixedpoint val) {
-  /* Fixedpoint res = val;
-
-  float decimal = (((float)val.whole_part / (float)2.0) - (val.whole_part / 2));
-  while (decimal != (int) decimal) {
-    decimal *= 10; // this is now the decimal value after halving, represnted as an int
-  }
-  uint64_t intdecimal = (uint64_t) decimal;
-  uint64_t before_padding = (uint64_t)strtoul(intdecimal, NULL, 16);
-  //add leading zeros
-  uint64_t remainder = before_padding << (64 - 4 * strlen(res.frac_part));
-
-
-  if (!fixedpoint_is_zero(val)) {
-    res.whole_part = val.whole_part>>1;
-    //printf("whole part is: %d", res.whole_part);
-    // if (res.whole_part == 0) {
-    //   //printf("got here");
-    //   res.frac_part += 0x8000000000000000UL;
-    // }
-    res.frac_part = val.frac_part>>1;
-
-    if (val.whole_part % 2 != 0) {
-      printf("got here");
-      //res.frac_part = res.frac_part | 1UL<<63;
-      //res.frac_part += 0x8000000000000000UL;
-      res.frac_part += remainder;
-    }
-    if (val.frac_part % 2 != 0) {
-      res.tag = res.tag + 5;
-    }
-  }
-  return res;
-  */
-  //check if overflow happens
   if ((val.frac_part & 1UL) == 1UL) {
+    //underflow
     val.tag += 5;
     return val;
   }
+  //using bit shifting to halve
   if ((val.whole_part & 1UL) == 1UL) {
     val.frac_part = val.frac_part >> 1;
     val.frac_part = val.frac_part | (1UL << 63);
@@ -182,7 +157,6 @@ Fixedpoint fixedpoint_halve(Fixedpoint val) {
     val.frac_part = val.frac_part >> 1;
     val.whole_part = val.whole_part >> 1;
   }
-  printf("whole part %x, frac part%x", val.whole_part, val.frac_part);
   return val;
 }
 
@@ -191,13 +165,13 @@ Fixedpoint fixedpoint_double(Fixedpoint val) {
   uint64_t carry = 0;
 
   if (!fixedpoint_is_zero(val)) {
-    if (val.frac_part * 2 < val.frac_part)
-    {
+    if (val.frac_part * 2 < val.frac_part) {
+      //overflow from frac to whole
       carry = 1;
     }
     res.frac_part = val.frac_part * 2;
-    if (val.whole_part * 2 < val.whole_part)
-    {
+    if (val.whole_part * 2 < val.whole_part) {
+      //overflow
       res.tag = res.tag + 3;
     }
     res.whole_part = val.whole_part * 2 + carry;
@@ -280,8 +254,9 @@ int fixedpoint_is_valid(Fixedpoint val) {
 }
 
 char *fixedpoint_format_as_hex(Fixedpoint val) {
+  //allocated string for returning
   char *s = malloc(34);
-
+  //using sprintf to format as hex
   int is_decimal = 0;
   if (fixedpoint_is_zero(val)) {
     strcpy(s, "0");
@@ -296,6 +271,7 @@ char *fixedpoint_format_as_hex(Fixedpoint val) {
     sprintf(s, "-%lx.%016lx", val.whole_part, val.frac_part);
     is_decimal = 1;
   }
+  //trimming trailing zeros
   if (is_decimal) {
     for(int i = strlen(s) - 1; i >= 0; i--) {
       if (s[i] != '0') {
